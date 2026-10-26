@@ -23,6 +23,16 @@ struct Args {
 
 #[derive(clap::Subcommand, Debug)]
 enum Commands {
+    /// Prepare the independent dialer recovery listener before hiding the icon
+    Stealth {
+        #[command(subcommand)]
+        command: crate::stealth::StealthCommand,
+    },
+    /// Manage the local ikunSU web manager (127.0.0.1:9178)
+    Webui {
+        #[command(subcommand)]
+        command: crate::webui::WebCommand,
+    },
     /// Manage KernelSU modules
     Module {
         #[command(subcommand)]
@@ -528,6 +538,8 @@ pub fn run() -> Result<()> {
     log::info!("command: {:?}", cli.command);
 
     let result = match cli.command {
+        Commands::Stealth { command } => crate::stealth::run(command),
+        Commands::Webui { command } => crate::webui::run(command),
         Commands::PostFsData => init_event::on_post_fs_data(),
         Commands::BootCompleted => {
             init_event::on_boot_completed();

@@ -46,17 +46,25 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
 import androidx.navigationevent.compose.rememberNavigationEventState
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import me.weishu.kernelsu.Natives
+import me.weishu.kernelsu.ui.cosmetic.CosmeticState
+import me.weishu.kernelsu.ui.cosmetic.LocalCosmeticState
+import me.weishu.kernelsu.ui.cosmetic.FallingOverlay
+import me.weishu.kernelsu.ui.screen.ikun.IkunSettingsScreen
+import me.weishu.kernelsu.ui.stealth.StealthController
+import me.weishu.kernelsu.ui.util.execKsud
 import me.weishu.kernelsu.ui.component.bottombar.BottomBar
 import me.weishu.kernelsu.ui.component.bottombar.MainPagerState
 import me.weishu.kernelsu.ui.component.bottombar.NavigationBadgeState
@@ -71,6 +79,7 @@ import me.weishu.kernelsu.ui.navigation3.rememberNavigator
 import me.weishu.kernelsu.ui.screen.about.AboutScreen
 import me.weishu.kernelsu.ui.screen.appprofile.AppProfileScreen
 import me.weishu.kernelsu.ui.screen.colorpalette.ColorPaletteScreen
+import me.weishu.kernelsu.ui.screen.elevation.IkunElevationScreen
 import me.weishu.kernelsu.ui.screen.executemoduleaction.ExecuteModuleActionScreen
 import me.weishu.kernelsu.ui.screen.flash.FlashScreen
 import me.weishu.kernelsu.ui.screen.home.HomePager
@@ -130,11 +139,22 @@ class MainActivity : ComponentActivity() {
         }
 
         val isManager = Natives.isManager
-        if (isManager && Natives.kernelUAPIVersion == Natives.managerUAPIVersion) install()
+        if (isManager && Natives.kernelUAPIVersion == Natives.managerUAPIVersion) {
+            install()
+            if (StealthController.isHidden(this)) {
+                lifecycleScope.launch {
+                    val ready = withContext(Dispatchers.IO) {
+                        runCatching { execKsud("stealth start") }.getOrDefault(false)
+                    }
+                    if (!ready) StealthController.setHidden(this@MainActivity, false)
+                }
+            }
+        }
 
         if (savedInstanceState == null) intent?.let { intentChannel.trySend(it) }
 
         setContent {
+            val cosmeticState = remember { CosmeticState(applicationContext) }
             val viewModel = viewModel<MainActivityViewModel>()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val selectedMainPage by viewModel.selectedMainPage.collectAsStateWithLifecycle()
@@ -173,6 +193,7 @@ class MainActivity : ComponentActivity() {
                 LocalEnableNavigationBadge provides uiState.enableNavigationBadge,
                 LocalModuleDescriptionMaxLines provides uiState.moduleDescriptionMaxLines,
                 LocalUiMode provides uiMode,
+                LocalCosmeticState provides cosmeticState,
             ) {
                 KernelSUTheme(appSettings = appSettings, uiMode = uiMode) {
                     IntentDispatcher(intentChannel = intentChannel)
@@ -253,15 +274,20 @@ class MainActivity : ComponentActivity() {
                             entry<Route.SuperUser>(swipeDismiss = swipeDismiss) { mainScreenEntry() }
                             entry<Route.Module>(swipeDismiss = swipeDismiss) { mainScreenEntry() }
                             entry<Route.Settings>(swipeDismiss = swipeDismiss) { mainScreenEntry() }
+                            entry<Route.IkunSettings>(swipeDismiss = swipeDismiss) { IkunSettingsScreen() }
+                            entry<Route.IkunElevation>(swipeDismiss = swipeDismiss) { IkunElevationScreen() }
                         }
                     }
 
+                    Box {
                     when (uiMode) {
                         UiMode.Material -> androidx.compose.material3.Scaffold(
                             containerColor = MaterialTheme.colorScheme.surfaceContainer
                         ) { navDisplay() }
 
                         UiMode.Miuix -> Scaffold { navDisplay() }
+                    }
+                    FallingOverlay(cosmeticState)
                     }
                     SideEffect { contentReady = true }
                 }

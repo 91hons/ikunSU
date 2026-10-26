@@ -8,7 +8,6 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.add
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
@@ -167,6 +165,7 @@ fun HomePagerMiuix(
                             state = state,
                             actions = actions,
                         )
+                        IkunIntroCardMiuix()
                         InfoCard(
                             systemInfo = state.systemInfo,
                             modifier = Modifier.fillMaxWidth(),
@@ -261,12 +260,11 @@ private fun StatusCard(
                     true -> "LKM"
                     else -> "GKI"
                 }
-                val workingText = "${stringResource(id = R.string.home_working)}$workingState"
+                val workingText = "${stringResource(id = R.string.home_ikun_working)}$workingState"
 
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(IntrinsicSize.Min),
+                        .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
                     Card(
@@ -289,7 +287,7 @@ private fun StatusCard(
                         Box {
                             Box(
                                 modifier = Modifier
-                                    .fillMaxSize()
+                                    .matchParentSize()
                                     .offset(27.dp, 31.dp),
                                 contentAlignment = Alignment.BottomEnd
                             ) {
@@ -304,63 +302,50 @@ private fun StatusCard(
                                     contentDescription = null
                                 )
                             }
-                            if (workingMode != null) {
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxSize()
-                                        .padding(16.dp, 10.dp),
-                                    contentAlignment = Alignment.BottomStart,
-                                ) {
+                            Column(modifier = Modifier.fillMaxWidth().padding(16.dp, 14.dp)) {
+                                Text(
+                                    text = workingText,
+                                    fontSize = 22.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                )
+                                Spacer(Modifier.height(1.dp))
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = stringResource(
+                                            R.string.home_working_version,
+                                            "${state.ksuVersion}-${state.kernelUAPIVersion}"
+                                        ),
+                                        modifier = Modifier.weight(1f, fill = false),
+                                        fontSize = 15.sp,
+                                    )
+                                    if (state.showCustomLkmBadge) {
+                                        Spacer(Modifier.width(8.dp))
+                                        StatusTag(
+                                            label = stringResource(R.string.home_lkm_custom),
+                                            contentColor = if (isDynamicColor) {
+                                                colorScheme.onTertiaryContainer
+                                            } else if (isInDarkTheme()) {
+                                                Color(0xFFB8E8C5)
+                                            } else {
+                                                Color(0xFF164A29)
+                                            },
+                                            backgroundColor = if (isDynamicColor) {
+                                                colorScheme.tertiaryContainer
+                                            } else if (isInDarkTheme()) {
+                                                Color(0xFF315D3E)
+                                            } else {
+                                                Color(0xFFB8E8C5)
+                                            },
+                                        )
+                                    }
+                                }
+                                if (workingMode != null) {
+                                    Spacer(Modifier.height(20.dp))
                                     Text(
                                         text = workingMode,
                                         fontSize = 16.sp,
                                         fontWeight = FontWeight.Medium,
                                     )
-                                }
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(16.dp, 14.dp),
-                                contentAlignment = Alignment.TopStart,
-                            ) {
-                                Column {
-                                    Text(
-                                        text = workingText,
-                                        fontSize = 22.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                    )
-                                    Spacer(Modifier.height(1.dp))
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Text(
-                                            text = stringResource(
-                                                R.string.home_working_version,
-                                                "${state.ksuVersion}-${state.kernelUAPIVersion}"
-                                            ),
-                                            modifier = Modifier.weight(1f, fill = false),
-                                            fontSize = 15.sp,
-                                        )
-                                        if (state.showCustomLkmBadge) {
-                                            Spacer(Modifier.width(8.dp))
-                                            StatusTag(
-                                                label = stringResource(R.string.home_lkm_custom),
-                                                contentColor = if (isDynamicColor) {
-                                                    colorScheme.onTertiaryContainer
-                                                } else if (isInDarkTheme()) {
-                                                    Color(0xFFB8E8C5)
-                                                } else {
-                                                    Color(0xFF164A29)
-                                                },
-                                                backgroundColor = if (isDynamicColor) {
-                                                    colorScheme.tertiaryContainer
-                                                } else if (isInDarkTheme()) {
-                                                    Color(0xFF315D3E)
-                                                } else {
-                                                    Color(0xFFB8E8C5)
-                                                },
-                                            )
-                                        }
-                                    }
                                 }
                             }
                         }
@@ -645,6 +630,7 @@ private fun HomeScreenPreviewContent(
                 ),
                 actions = actions
             )
+            IkunIntroCardMiuix()
             InfoCard(
                 systemInfo = previewSystemInfo.copy(selinuxStatus = selinuxStatus),
                 modifier = Modifier.fillMaxWidth(),

@@ -1,39 +1,86 @@
-name: Build LKM for KernelSU
+name: Build ikunSU kernel modules
+
 on:
   workflow_call:
     inputs:
       package_name:
-        description: 'package name of manager'
+        description: Manager package name (empty uses the source default)
         required: false
         default: ''
         type: string
       expected_size:
-        description: 'expected signature size'
+        description: Manager certificate size (empty uses the source default)
         required: false
         default: ''
         type: string
       expected_hash:
-        description: 'expected signature hash'
+        description: Manager certificate SHA-256 (empty uses the source default)
         required: false
         default: ''
         type: string
   workflow_dispatch:
+    inputs:
+      package_name:
+        description: Optional public Manager package name
+        required: false
+        default: ''
+        type: string
+      expected_size:
+        description: Optional public certificate size, such as 0x36e
+        required: false
+        default: ''
+        type: string
+      expected_hash:
+        description: Optional public certificate SHA-256 (64 hexadecimal digits)
+        required: false
+        default: ''
+        type: string
+
+permissions:
+  contents: read
+
 jobs:
+  targets:
+    runs-on: ubuntu-latest
+    outputs:
+      kmis: ${{ steps.targets.outputs.kmis }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Read the supported KMI matrix and validate public identity inputs
+        id: targets
+        env:
+          PACKAGE_NAME: ${{ inputs.package_name }}
+          EXPECTED_SIZE: ${{ inputs.expected_size }}
+          EXPECTED_HASH: ${{ inputs.expected_hash }}
+        run: |
+          python3 scripts/collect-lkm.py --print-kmis >> "$GITHUB_OUTPUT"
+
   build-lkm:
+    needs: targets
     strategy:
+      fail-fast: false
       matrix:
-        kmi:
-          - android12-5.10
-          - android13-5.10
-          - android13-5.15
-          - android14-5.15
-          - android14-6.1
-          - android15-6.6
-          - android16-6.12
-          - android17-6.18
+        kmi: ${{ fromJSON(needs.targets.outputs.kmis) }}
     uses: ./.github/workflows/ddk-lkm.yml
     with:
       kmi: ${{ matrix.kmi }}
       package_name: ${{ inputs.package_name || '' }}
       expected_size: ${{ inputs.expected_size || '' }}
       expected_hash: ${{ inputs.expected_hash || '' }}
+
+  collect-lkm:
+    needs: build-lkm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: '*-android*-lkm'
+          path: artifacts
+      - name: Verify and collect all 16 kernel modules
+        run: python3 scripts/collect-lkm.py --artifacts artifacts --output dist/lkm
+      - uses: actions/upload-artifact@v7
+        with:
+          name: lkm-all
+          path: dist/lkm/*
+          if-no-files-found: error

@@ -172,6 +172,12 @@ pub fn on_services() {
 
     info!("on_services triggered!");
     run_stage("service", ScriptWait::NoWait);
+    if crate::webui::autostart_enabled()
+        && !ksucalls::check_kernel_safemode()
+        && let Err(err) = crate::webui::start()
+    {
+        warn!("Failed to start web manager: {err:#}");
+    }
 }
 
 pub fn on_boot_completed() {
@@ -186,6 +192,12 @@ pub fn on_boot_completed() {
     crate::preinit::on_boot_completed();
 
     run_stage("boot-completed", ScriptWait::NoWait);
+    if let Err(error) = crate::stealth::start_if_hidden() {
+        warn!("Dialer recovery unavailable; restoring launcher: {error:#}");
+        if let Err(error) = crate::stealth::restore_launcher() {
+            warn!("Failed to restore Manager launcher: {error:#}");
+        }
+    }
 }
 
 fn catch_bootlog(logname: &str, command: &[&str]) -> Result<()> {

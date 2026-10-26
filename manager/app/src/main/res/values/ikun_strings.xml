@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ikun_settings_title">ikunSU features</string>
+    <string name="ikun_settings_summary">Falling animation, dialer recovery and web manager</string>
+    <string name="ikun_falling">Falling animation</string>
+    <string name="ikun_snow">Use snow particles instead of ikun images</string>
+    <string name="ikun_particle_size">Particle size</string>
+    <string name="ikun_particle_speed">Falling speed</string>
+    <string name="ikun_stealth">Hide launcher icon</string>
+    <string name="ikun_web_summary">Local web manager at 127.0.0.1:9178. Root is required. Open it here to authenticate.</string>
+    <string name="ikun_web_open">Start and open web manager</string>
+    <string name="ikun_web_stop">Stop web manager</string>
+    <string name="ikun_web_autostart">Start web manager at boot</string>
+    <string name="ikun_operation_failed">Operation failed. Check root access and the matching ksud build.</string>
+    <string name="ikun_operation_done">Done</string>
+    <string name="ikun_dialer_description">Hide the launcher icon, then enter the code below in the system phone dialer to restore it. No call is needed. Your dialer must support Android secret codes.</string>
+    <string name="ikun_copy_code">Copy code</string>
+    <string name="ikun_code_copied">Recovery code copied</string>
+    <string name="ikun_open_dialer">Open dialer</string>
+    <string name="ikun_dialer_unavailable">No phone dialer is available on this device.</string>
+    <string name="ikun_recovery_unavailable">Dialer recovery could not start. The launcher icon remains visible. Check Root access and update ksud.</string>
+    <string name="ikun_icon_restored">ikunSU launcher icon restored</string>
+    <string name="home_ikun_working">&#24037;&#20316;&#20013; &#183; &#34081;&#24464;&#22372;&#21809;&#36339;&#20013;</string>
+    <string name="ikun_home_greeting">&#21992;&#65292;&#25105;&#26159;&#34081;&#24464;&#22372;</string>
+    <string name="ikun_home_introduction">&#32451;&#20064;&#26102;&#38271;&#20004;&#24180;&#21322;&#65292;&#21916;&#27426;&#21809;&#65292;&#36339;&#65292;rap&#65292;&#31726;&#29699;&#65292;music.</string>
+    <string name="ikun_home_quote_label">&#20170;&#26085;&#22372;&#35821; &#183; &#26412;&#22320;&#35821;&#24405;</string>
+    <string name="ikun_home_refresh_quote">&#20877;&#26469;&#19968;&#21477;&#22372;&#35821;</string>
+    <string name="ikun_home_attribution">&#22522;&#20110;KernelSU&#30340;github&#31038;&#21306;&#20108;&#25913;&#12290;&#19982;&#34081;&#24464;&#22372;&#26080;&#20851;&#32852;&#65292;&#21482;&#21809;&#36339;rap</string>
+    <string-array name="ikun_home_quotes">
+        <item>&#20320;&#24178;&#22043;&#21710;&#21568;</item>
+        <item>&#21385;&#19981;&#21385;&#23475;&#20320;&#40481;&#21733;</item>
+        <item>&#21035;&#24863;&#20882;</item>
+        <item>&#40481;&#40481;&#27809;&#40481;&#40481;</item>
+        <item>&#40481;&#20320;&#22826;&#32654;baby</item>
+        <item>&#26377;&#27809;&#26377;&#33620;&#26525;&#21507;&#21507;</item>
+        <item>&#21834;&#65281;&#40635;&#21513;&#20010;</item>
+    </string-array>
+</resources>

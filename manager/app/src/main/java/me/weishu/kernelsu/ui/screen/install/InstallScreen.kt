@@ -285,7 +285,8 @@ fun InstallScreen() {
         },
         onSelectForceBackup = {
             forceBackup = it
-        }
+        },
+        onOpenElevation = { navigator.push(Route.IkunElevation) },
     )
 
     when (LocalUiMode.current) {

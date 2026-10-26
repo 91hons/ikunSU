@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ikun_elevation_title">ikun提权</string>
+    <string name="ikun_elevation_entry_summary">Get Root on this device with the kernel exploit</string>
+    <string name="ikun_elevation_refresh">Refresh device state</string>
+    <string name="ikun_elevation_running">Running, please wait</string>
+    <string name="ikun_elevation_rooted">Root access is available</string>
+    <string name="ikun_elevation_unsupported">Unsupported on this device</string>
+    <string name="ikun_elevation_supported">Device requirements met</string>
+    <string name="ikun_elevation_start">Start elevation</string>
+    <string name="ikun_elevation_summary">Start it manually and follow the log below. Meeting the requirements does not guarantee success; the log is the actual result.</string>
+    <string name="ikun_elevation_unsupported_summary">ARM64 only, and the kernel series must be 5.10, 5.15, 6.1, 6.6, 6.12 or 6.18. Meeting these requirements does not guarantee success.</string>
+    <string name="ikun_elevation_rooted_summary">This Manager already has Root access, so there is nothing to elevate.</string>
+    <string name="ikun_elevation_device_title">Device and Manager</string>
+    <string name="ikun_elevation_package">Manager package name</string>
+    <string name="ikun_elevation_kernel">Kernel version</string>
+    <string name="ikun_elevation_security_patch">Security patch level</string>
+    <string name="ikun_elevation_unknown">Unknown</string>
+    <string name="ikun_elevation_options_title">Run options</string>
+    <string name="ikun_elevation_disable_modules">Disable installed modules</string>
+    <string name="ikun_elevation_disable_modules_summary">Mark every installed module disabled before the run, so a broken module cannot prevent the next boot.</string>
+    <string name="ikun_elevation_soft_reboot">Soft reboot when done</string>
+    <string name="ikun_elevation_soft_reboot_summary">Soft reboot after a successful run so the new Root environment takes effect immediately.</string>
+    <string name="ikun_elevation_log_title">Log</string>
+    <string name="ikun_elevation_log_empty">No log yet. It appears here once a run starts.</string>
+    <string name="ikun_elevation_copy_log">Copy log</string>
+    <string name="ikun_elevation_log_copied">Log copied</string>
+    <string name="ikun_elevation_blocked_abi">The primary ABI of this device is not arm64-v8a, and the payload is AArch64 only.</string>
+    <string name="ikun_elevation_blocked_secondary_user">ikun提权 only runs from the primary user profile.</string>
+    <string name="ikun_elevation_blocked_kernel">This kernel version is not in the supported list: 5.10, 5.15, 6.1, 6.6, 6.12 or 6.18.</string>
+    <string name="ikun_elevation_blocked_assets">The payload is missing from this install. Reinstall the complete Manager package.</string>
+    <string name="ikun_elevation_blocked_manager">libksud.so was not found in this package, so the Root daemon cannot be started.</string>
+    <string name="ikun_elevation_result_started">Elevation finished and ksud started. Restart the Manager to take over Root access.</string>
+    <string name="ikun_elevation_result_bootstrap">The bootstrap helper failed. Check the log below.</string>
+    <string name="ikun_elevation_result_timeout">Timed out waiting for the kernel module. Reboot the device and try again.</string>
+    <string name="ikun_elevation_result_patch">Patching failed. This device may already be fixed against the vulnerability.</string>
+    <string name="ikun_elevation_result_hooked">Elevation already ran during this boot, so there is nothing to do.</string>
+    <string name="ikun_elevation_operation_failed">Elevation failed. Check the log below.</string>
+    <string name="ikun_elevation_attribution">Based on the DirtyFragX open-source project; this screen is integrated into ikunSU.</string>
+</resources>

@@ -40,6 +40,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import me.weishu.kernelsu.R
+import me.weishu.kernelsu.ui.component.IkunElevationEntryMiuix
 import me.weishu.kernelsu.ui.component.dialog.rememberConfirmDialog
 import me.weishu.kernelsu.ui.theme.LocalEnableBlur
 import me.weishu.kernelsu.ui.util.BlurredBar
@@ -235,6 +236,13 @@ internal fun InstallScreenMiuix(
                             }
                         )
                     }
+                    // Reachable without Root, which is what this page is for: an
+                    // unrooted phone cannot open the settings page that used to
+                    // hold this entry.
+                    IkunElevationEntryMiuix(
+                        onOpen = actions.onOpenElevation,
+                        modifier = Modifier.padding(top = 12.dp),
+                    )
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()

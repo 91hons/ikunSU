@@ -37,6 +37,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import me.weishu.kernelsu.R
+import me.weishu.kernelsu.ui.component.IkunElevationEntryMaterial
 import me.weishu.kernelsu.ui.component.dialog.rememberConfirmDialog
 import me.weishu.kernelsu.ui.component.material.ExpressiveScaffold
 import me.weishu.kernelsu.ui.component.material.SegmentedCheckboxItem
@@ -157,6 +158,13 @@ internal fun InstallScreenMaterial(
                         )
                     }
                 }
+            )
+
+            // Reachable without Root, which is what this page is for: an unrooted
+            // phone cannot open the settings page that used to hold this entry.
+            IkunElevationEntryMaterial(
+                onOpen = actions.onOpenElevation,
+                modifier = Modifier.padding(horizontal = 16.dp),
             )
 
             SegmentedColumn(

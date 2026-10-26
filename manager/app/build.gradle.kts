@@ -23,10 +23,13 @@ val managerVersionCode = rootProject.extra["managerVersionCode"] as Int
 val managerVersionName = rootProject.extra["managerVersionName"] as String
 
 val isPrBuild = project.findProperty("IS_PR_BUILD")?.toString()?.toBoolean() ?: false
-val defaultManagerPackageName = if (isPrBuild) "me.weishu.kernelsu.pr" else "me.weishu.kernelsu"
-val defaultManagerName = if (isPrBuild) "KernelSU PR" else "KernelSU"
+val defaultManagerPackageName = if (isPrBuild) "com.hons.ikunSU.pr" else "com.hons.ikunSU"
+val defaultManagerName = if (isPrBuild) "ikunSU PR" else "ikunSU"
 val managerPackageName = project.findProperty("KSU_PACKAGE_NAME")?.toString() ?: defaultManagerPackageName
 val managerName = project.findProperty("KSU_NAME")?.toString() ?: defaultManagerName
+val managerAbis = project.findProperty("KSU_ABIS")?.toString()?.split(",")
+    ?: listOf("arm64-v8a", "x86_64", "riscv64")
+require(managerAbis.isNotEmpty() && managerAbis.all { it in listOf("arm64-v8a", "x86_64", "riscv64") })
 
 apksign {
     storeFileProperty = "KEYSTORE_FILE"
@@ -149,24 +152,31 @@ android {
         applicationId = managerPackageName
 
         buildConfigField("boolean", "IS_PR_BUILD", isPrBuild.toString())
+        buildConfigField("String", "UPDATE_REPOSITORY", "\"${project.findProperty("KSU_REPOSITORY") ?: "Hons123/ikunSU"}\"")
         resValue("string", "app_name", managerName)
 
         externalNativeBuild {
             cmake {
                 arguments += "-DANDROID_STL=none"
+                // The ikun提权 bootstrap helper reads its files from the Manager's
+                // own data directory, so it needs the real applicationId at
+                // compile time (PR builds use a different one).
+                arguments += "-DDFROOT_PACKAGE=$managerPackageName"
                 cFlags += baseCFlags + "-std=c2x"
                 cppFlags += baseCppFlags + "-std=c++2b"
             }
         }
 
         ndk {
-            abiFilters += listOf("arm64-v8a", "x86_64", "riscv64")
+            abiFilters += managerAbis
         }
     }
 
     lint {
         abortOnError = true
         checkReleaseBuilds = false
+        // Existing locales are partial; Android falls back to the default strings.
+        warning += "MissingTranslation"
     }
 
     compileOptions {
@@ -183,7 +193,7 @@ androidComponents {
 
 base {
     archivesName.set(
-        "${managerName.replace(" ", "_")}_${managerVersionName}_${managerVersionCode}"
+        "${managerName.replace(" ", "_")}_v${managerVersionName.removePrefix("v")}_${managerVersionCode}"
     )
 }
 

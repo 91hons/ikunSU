@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ikun_elevation_title">ikun提权</string>
+    <string name="ikun_elevation_entry_summary">通过内核漏洞在本机获取 Root 权限</string>
+    <string name="ikun_elevation_refresh">刷新设备状态</string>
+    <string name="ikun_elevation_running">正在执行，请稍候</string>
+    <string name="ikun_elevation_rooted">已获得 Root 权限</string>
+    <string name="ikun_elevation_unsupported">当前设备不支持</string>
+    <string name="ikun_elevation_supported">设备条件符合</string>
+    <string name="ikun_elevation_start">开始提权</string>
+    <string name="ikun_elevation_summary">手动启动后可在下方查看执行日志。设备条件符合不代表能够成功提权，实际结果以执行日志为准。</string>
+    <string name="ikun_elevation_unsupported_summary">目前仅支持 ARM64，内核系列需为 5.10、5.15、6.1、6.6、6.12 或 6.18。符合这些条件不代表能够成功提权。</string>
+    <string name="ikun_elevation_rooted_summary">当前管理器已拥有 Root 权限，无需再次提权。</string>
+    <string name="ikun_elevation_device_title">设备与管理器</string>
+    <string name="ikun_elevation_package">当前管理器包名</string>
+    <string name="ikun_elevation_kernel">内核版本</string>
+    <string name="ikun_elevation_security_patch">安全补丁日期</string>
+    <string name="ikun_elevation_unknown">未知</string>
+    <string name="ikun_elevation_options_title">执行选项</string>
+    <string name="ikun_elevation_disable_modules">禁用现有模块</string>
+    <string name="ikun_elevation_disable_modules_summary">提权前先给已安装模块打上禁用标记，避免坏模块导致下次无法开机。</string>
+    <string name="ikun_elevation_soft_reboot">完成后软重启</string>
+    <string name="ikun_elevation_soft_reboot_summary">提权成功后执行软重启，让新的 Root 环境立即生效。</string>
+    <string name="ikun_elevation_log_title">执行日志</string>
+    <string name="ikun_elevation_log_empty">暂无日志，开始执行后将在这里显示。</string>
+    <string name="ikun_elevation_copy_log">复制日志</string>
+    <string name="ikun_elevation_log_copied">日志已复制</string>
+    <string name="ikun_elevation_blocked_abi">当前设备的首选 ABI 不是 arm64-v8a，提权组件只提供 AArch64 版本。</string>
+    <string name="ikun_elevation_blocked_secondary_user">ikun提权 只能在主用户（用户 0）中运行。</string>
+    <string name="ikun_elevation_blocked_kernel">当前内核版本不在支持列表内，支持 5.10、5.15、6.1、6.6、6.12、6.18。</string>
+    <string name="ikun_elevation_blocked_assets">提权组件缺失，请重新安装完整的管理器安装包。</string>
+    <string name="ikun_elevation_blocked_manager">未在本包内找到 libksud.so，无法启动 Root 守护进程。</string>
+    <string name="ikun_elevation_result_started">提权完成，ksud 已启动。请重启管理器以接管 Root 权限。</string>
+    <string name="ikun_elevation_result_bootstrap">bootstrap 执行失败，请查看下方日志。</string>
+    <string name="ikun_elevation_result_timeout">等待内核模块响应超时，请重启设备后再试。</string>
+    <string name="ikun_elevation_result_patch">补丁写入失败，当前设备可能已经修复了该漏洞。</string>
+    <string name="ikun_elevation_result_hooked">本次开机已经执行过提权，无需重复执行。</string>
+    <string name="ikun_elevation_operation_failed">提权执行失败，请查看下方日志。</string>
+    <string name="ikun_elevation_attribution">功能来源：DirtyFragX 开源项目，界面由 ikunSU 整合。</string>
+</resources>

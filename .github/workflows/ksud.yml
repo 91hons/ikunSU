@@ -5,6 +5,15 @@ on:
       target:
         required: true
         type: string
+      package_name:
+        type: string
+        default: 'com.hons.ikunSU'
+      expected_size:
+        type: string
+        default: '0x36e'
+      expected_hash:
+        type: string
+        default: 'f00129f638639a1d41cb71d4f3e63c25b3a87127ac8eb038dd74ca0774d05c5f'
       pack_lkm:
         required: false
         type: boolean
@@ -46,6 +55,13 @@ jobs:
           rustup target add ${{ inputs.target }}
         fi
 
+    - name: Validate complete release assets
+      if: endsWith(inputs.target, '-linux-android')
+      run: |
+        set -euo pipefail
+        python3 scripts/tests/test-embedded-assets.py
+        python3 scripts/verify-embedded-assets.py --arch "${{ inputs.target }}" --root userspace/ksud/bin
+
     - uses: Swatinem/rust-cache@v2
       with:
         workspaces: userspace/ksud
@@ -56,18 +72,36 @@ jobs:
       with:
         ndk-version: r29
 
+    - name: Check Android userspace
+      if: inputs.target == 'aarch64-linux-android'
+      working-directory: userspace/ksud
+      env:
+        ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        KSU_PACKAGE_NAME: ${{ inputs.package_name }}
+        KSU_EXPECTED_SIZE: ${{ inputs.expected_size }}
+        KSU_EXPECTED_HASH: ${{ inputs.expected_hash }}
+      run: |
+        cargo install cargo-ndk --locked
+        cargo ndk -t arm64-v8a check
+        cargo ndk -t arm64-v8a clippy
+        cargo fmt --all --check
+        rustc --edition 2024 --test src/webui_auth.rs -o /tmp/ikunsu-web-auth-tests
+        /tmp/ikunsu-web-auth-tests
+
     - name: Build ksud
       env:
         ANDROID_NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
+        KSU_PACKAGE_NAME: ${{ inputs.package_name }}
+        KSU_EXPECTED_SIZE: ${{ inputs.expected_size }}
+        KSU_EXPECTED_HASH: ${{ inputs.expected_hash }}
       run: |
-        if [ "${{ github.event_name }}" = "pull_request" ]; then
-          export KSU_PACKAGE_NAME="me.weishu.kernelsu.pr"
-        fi
         if [ "${{ inputs.target }}" = riscv64-linux-android ]; then
           source .github/scripts/setup-rust-build.sh riscv64-linux-android 35
+          cargo +nightly-2026-09-23 clean --package ksud --target "$TRIPLE"
           cargo +nightly-2026-09-23 build --config .github/riscv64-cargo.toml -Z build-std=std,panic_abort --target "$TRIPLE" --release --manifest-path ./userspace/ksud/Cargo.toml
         else
           source .github/scripts/setup-rust-build.sh ${{ inputs.target }} 26
+          cargo clean --package ksud --target "$TRIPLE"
           cargo build --target "$TRIPLE" --release --manifest-path ./userspace/ksud/Cargo.toml
         fi
 
@@ -76,3 +110,4 @@ jobs:
       with:
         name: ksud-${{ inputs.target }}
         path: target/${{ inputs.target }}/release/ksud
+        if-no-files-found: error

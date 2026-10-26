@@ -7,6 +7,10 @@ cmake_minimum_required(VERSION 3.18.1)
 
 project("kernelsu")
 
+# ikun提权 payload. Added before link_libraries() so the C executables below do
+# not inherit the C++ runtime, and skipped by its own CMakeLists on non-arm64.
+add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/../dfroot ${CMAKE_CURRENT_BINARY_DIR}/dfroot)
+
 find_package(cxx REQUIRED CONFIG)
 link_libraries(cxx::cxx)
 
@@ -16,7 +20,7 @@ add_library(kernelsu
         ksu.cc
         )
 
-target_include_directories(kernelsu PRIVATE .)
+target_include_directories(kernelsu PRIVATE . "${CMAKE_CURRENT_SOURCE_DIR}/../../../../..")
 
 find_library(log-lib log)
 

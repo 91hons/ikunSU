@@ -9,28 +9,110 @@ const BOOTSTRAP_SOURCE: &str = "src/lkm_image_bootstrap.S";
 const BOOTSTRAP_OBJECT: &str = "lkm_image_bootstrap.o";
 const PREPARED_BOOTSTRAP_OBJECT: &str = ".lkm_image_bootstrap.o";
 
-fn get_git_version() -> Result<(u32, String), std::io::Error> {
-    let output = Command::new("git")
-        .args(["rev-list", "--count", "HEAD"])
-        .output()?;
-
-    let output = output.stdout;
-    let version_code = String::from_utf8(output).expect("Failed to read git count stdout");
-    let version_code: u32 = version_code
-        .trim()
-        .parse()
-        .map_err(|_| std::io::Error::other("Failed to parse git count"))?;
-    let version_code = 30000 + version_code;
-
-    let version_name = String::from_utf8(
-        Command::new("git")
-            .args(["describe", "--tags", "--always"])
-            .output()?
-            .stdout,
+fn release_version() -> (u32, String) {
+    let path = Path::new("../../version.properties");
+    println!("cargo:rerun-if-changed={}", path.display());
+    let contents = fs::read_to_string(path).expect("cannot read shared version.properties");
+    let property = |key: &str| {
+        contents
+            .lines()
+            .filter_map(|line| line.split_once('='))
+            .find(|(name, _)| name.trim() == key)
+            .map(|(_, value)| value.trim().to_string())
+            .unwrap_or_else(|| panic!("missing {key} in version.properties"))
+    };
+    (
+        property("KSU_VERSION_CODE")
+            .parse()
+            .expect("invalid KSU_VERSION_CODE"),
+        property("KSU_VERSION_NAME"),
     )
-    .map_err(|_| std::io::Error::other("Failed to read git describe stdout"))?;
-    let version_name = version_name.trim_start_matches('v').to_string();
-    Ok((version_code, version_name))
+}
+
+fn manager_certificate() {
+    println!("cargo:rerun-if-env-changed=KSU_EXPECTED_SIZE");
+    println!("cargo:rerun-if-env-changed=KSU_EXPECTED_HASH");
+    let size = env::var("KSU_EXPECTED_SIZE").unwrap_or_else(|_| "878".to_string());
+    let size = if let Some(hex) = size.strip_prefix("0x") {
+        u32::from_str_radix(hex, 16)
+    } else {
+        size.parse::<u32>()
+    }
+    .expect("invalid KSU_EXPECTED_SIZE");
+    assert!(
+        (1..=1024).contains(&size),
+        "invalid Manager certificate size"
+    );
+    let hash = env::var("KSU_EXPECTED_HASH").unwrap_or_else(|_| {
+        "f00129f638639a1d41cb71d4f3e63c25b3a87127ac8eb038dd74ca0774d05c5f".to_string()
+    });
+    assert!(
+        hash.len() == 64 && hash.bytes().all(|byte| byte.is_ascii_hexdigit()),
+        "invalid KSU_EXPECTED_HASH"
+    );
+    println!("cargo:rustc-env=KSU_EXPECTED_SIZE={size}");
+    println!(
+        "cargo:rustc-env=KSU_EXPECTED_HASH={}",
+        hash.to_ascii_lowercase()
+    );
+}
+
+fn validate_release_assets() {
+    // Debug check/Clippy may run before the kernel matrix is built. A release
+    // must embed every supported KMI and ksuinit for its target architecture.
+    if env::var("CARGO_CFG_TARGET_OS").as_deref() != Ok("android") {
+        return;
+    }
+    let arch = env::var("CARGO_CFG_TARGET_ARCH").expect("missing target architecture");
+    let machine = match arch.as_str() {
+        "aarch64" => 183,
+        "x86_64" => 62,
+        "riscv64" => 243,
+        _ => panic!("unsupported Android architecture: {arch}"),
+    };
+    let directory = PathBuf::from("bin").join(&arch);
+    println!("cargo:rerun-if-changed={}", directory.display());
+    if env::var("PROFILE").as_deref() != Ok("release") {
+        return;
+    }
+    let targets_path = Path::new("../../scripts/lkm-targets.json");
+    println!("cargo:rerun-if-changed={}", targets_path.display());
+    let manifest: serde_json::Value = serde_json::from_str(
+        &fs::read_to_string(targets_path).expect("cannot read LKM target manifest"),
+    )
+    .expect("invalid LKM target manifest");
+    let mut files = vec![("ksuinit".to_string(), false)];
+    if arch != "riscv64" {
+        for kmi in manifest["kmis"].as_array().expect("missing KMI list") {
+            files.push((format!("{}_kernelsu.ko", kmi.as_str().unwrap()), true));
+        }
+    }
+    for (name, module) in files {
+        let path = directory.join(name);
+        println!("cargo:rerun-if-changed={}", path.display());
+        let bytes = fs::read(&path).unwrap_or_else(|error| {
+            panic!(
+                "release asset {} is missing: {error}; build/stage LKM and ksuinit before ksud",
+                path.display()
+            )
+        });
+        let valid = bytes.len() >= 64
+            && bytes.starts_with(b"\x7fELF")
+            && bytes[4] == 2
+            && bytes[5] == 1
+            && u16::from_le_bytes([bytes[18], bytes[19]]) == machine;
+        assert!(valid, "invalid ELF architecture for {}", path.display());
+        let kind = u16::from_le_bytes([bytes[16], bytes[17]]);
+        assert!(
+            if module {
+                kind == 1
+            } else {
+                kind == 2 || kind == 3
+            },
+            "invalid ELF type for {}",
+            path.display()
+        );
+    }
 }
 
 fn configure_bindgen() {
@@ -225,17 +307,13 @@ fn assemble_bootstrap() {
 fn main() {
     assemble_bootstrap();
 
-    let (code, name) = match get_git_version() {
-        Ok((code, name)) => (code, name),
-        Err(_) => {
-            // show warning if git is not installed
-            println!("cargo:warning=Failed to get git version, using 0.0.0");
-            (0, "0.0.0".to_string())
-        }
-    };
+    let (code, name) = release_version();
+    manager_certificate();
+    validate_release_assets();
     if env::var("KSU_PACKAGE_NAME").is_err() {
-        println!("cargo:rustc-env=KSU_PACKAGE_NAME=me.weishu.kernelsu");
+        println!("cargo:rustc-env=KSU_PACKAGE_NAME=com.hons.ikunSU");
     }
+    println!("cargo:rerun-if-env-changed=KSU_PACKAGE_NAME");
     println!("cargo:rustc-env=VERSION_CODE={code}");
     println!("cargo:rustc-env=VERSION_NAME={name}");
 

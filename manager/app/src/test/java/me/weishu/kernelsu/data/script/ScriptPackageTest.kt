@@ -26,6 +26,8 @@ class ScriptPackageTest {
         class Dir(name: String) : Entry(name)
     }
 
+    private fun isWindows(): Boolean =
+        System.getProperty("os.name").orEmpty().startsWith("Windows", ignoreCase = true)
     private fun file(name: String, text: String, mode: Int? = null) = Entry.FileEntry(name, text.toByteArray(), mode)
 
     private fun zip(vararg entries: Entry): File {
@@ -127,8 +129,13 @@ class ScriptPackageTest {
         ScriptPackage.extract(z, dest)
         assertEquals("echo hi\n", File(dest, "action.sh").readText())
         assertEquals("payload", File(dest, "data/nested/file.txt").readText())
-        assertTrue(File(dest, "bin/helper").canExecute())
-        assertFalse(File(dest, "data/nested/file.txt").canExecute())
+        // The JVM cannot observe unix mode bits on Windows: every existing file
+        // reports canExecute() == true there, so the permission assertions only
+        // run on platforms that actually have the bit.
+        if (!isWindows()) {
+            assertTrue(File(dest, "bin/helper").canExecute())
+            assertFalse(File(dest, "data/nested/file.txt").canExecute())
+        }
         // No temporary directory is left next to the extraction.
         assertEquals(listOf("abc"), dest.parentFile!!.list()!!.toList())
 

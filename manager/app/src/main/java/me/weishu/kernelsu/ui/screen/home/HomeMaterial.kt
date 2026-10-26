@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -133,6 +132,7 @@ fun HomePagerMaterial(
                 state = state,
                 actions = actions,
             )
+            IkunIntroCardMaterial()
             InfoCard(systemInfo = state.systemInfo)
             SupportLinks(onOpenUrl = actions.onOpenUrl)
             Spacer(
@@ -213,7 +213,7 @@ private fun StatusCard(
             else -> Icons.Rounded.Block
         }
         val statusTitle = when {
-            ksuActive -> stringResource(R.string.home_working)
+            ksuActive -> stringResource(R.string.home_ikun_working)
             notInstalled -> stringResource(R.string.home_not_installed)
             else -> stringResource(R.string.home_unsupported)
         }
@@ -271,14 +271,12 @@ private fun StatusCard(
                 trailingContent = statusTrailing,
                 overlineContent = null,
                 supportingContent = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             text = statusSummary,
-                            modifier = Modifier.weight(1f, fill = false),
                             style = MaterialTheme.typography.bodyMedium
                         )
                         if (state.showCustomLkmBadge) {
-                            Spacer(Modifier.width(8.dp))
                             StatusTag(
                                 label = stringResource(R.string.home_lkm_custom),
                                 contentColor = MaterialTheme.colorScheme.onTertiaryContainer,
@@ -297,13 +295,12 @@ private fun StatusCard(
                 ),
                 elevation = ListItemDefaults.elevation(),
                 content = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         Text(
                             text = statusTitle,
                             style = MaterialTheme.typography.titleMediumEmphasized
                         )
                         if (ksuActive && state.isSafeMode) {
-                            Spacer(Modifier.width(8.dp))
                             StatusTag(
                                 label = stringResource(id = R.string.safe_mode),
                                 contentColor = MaterialTheme.colorScheme.onErrorContainer,
@@ -311,7 +308,6 @@ private fun StatusCard(
                             )
                         }
                         if (ksuActive && state.isLateLoadMode) {
-                            Spacer(Modifier.width(8.dp))
                             StatusTag(
                                 label = stringResource(id = R.string.jailbreak_mode),
                                 contentColor = MaterialTheme.colorScheme.onErrorContainer,
@@ -551,6 +547,7 @@ private fun HomeScreenPreviewContent(
                 ),
                 actions = actions
             )
+            IkunIntroCardMaterial()
             InfoCard(previewSystemInfo.copy(selinuxStatus = selinuxStatus))
             SupportLinks(onOpenUrl = {})
         }

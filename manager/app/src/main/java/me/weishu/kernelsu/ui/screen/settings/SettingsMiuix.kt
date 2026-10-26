@@ -165,6 +165,11 @@ fun SettingPagerMiuix(
                             onSelectedIndexChange = actions.onSetUiModeIndex
                         )
                         ArrowPreference(
+                            title = stringResource(R.string.ikun_settings_title),
+                            summary = stringResource(R.string.ikun_settings_summary),
+                            onClick = actions.onOpenIkunSettings,
+                        )
+                        ArrowPreference(
                             title = stringResource(id = R.string.settings_theme),
                             summary = stringResource(id = R.string.settings_theme_summary),
                             startAction = {

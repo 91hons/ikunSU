@@ -75,6 +75,8 @@ mod android {
     pub const KSU_TEMP_BACKUP_DIR_NAME: &str = "boot_backup";
 
     pub const DEFAULT_PACKAGE_NAME: &str = env!("KSU_PACKAGE_NAME");
+    pub const MANAGER_CERT_HASH: &str = env!("KSU_EXPECTED_HASH");
+    pub const MANAGER_CERT_SIZE: &str = env!("KSU_EXPECTED_SIZE");
 }
 
 #[allow(unused)]

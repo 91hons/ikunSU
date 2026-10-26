@@ -8,4 +8,10 @@ AGENTS.md
 __pycache__
 /dist
 /repack-config.json
+/ikunSU.apk
+*.jks
+*.keystore
+/private-signing/
+/manager/local.properties
+/manager/app/src/main/jniLibs/**/libksud.so
 /userspace/ksud/.lkm_image_bootstrap.o

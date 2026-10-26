@@ -1,5 +1,5 @@
 #![allow(clippy::unreadable_literal)]
-use anyhow::{Result, bail};
+use anyhow::{Context, Result, bail};
 
 use crate::ksu_uapi;
 use std::cell::Cell;
@@ -149,7 +149,7 @@ fn ksuctl<T>(request: u32, arg: *mut T) -> Result<i32> {
     unsafe {
         let ret = libc::ioctl(fd as libc::c_int, request as i32, arg);
         if ret < 0 {
-            bail!("ksuctl failed: {}", io::Error::last_os_error())
+            return Err(io::Error::last_os_error()).context("ksuctl failed");
         }
         Ok(ret)
     }
@@ -296,6 +296,55 @@ pub fn get_wrapped_fd(fd: RawFd) -> Result<RawFd> {
     };
     let result = ksuctl(ksu_uapi::KSU_IOCTL_GET_WRAPPER_FD, &raw mut cmd)?;
     Ok(result)
+}
+
+pub fn uid_granted_root(uid: u32) -> Result<bool> {
+    let mut cmd = ksu_uapi::ksu_uid_granted_root_cmd { uid, granted: 0 };
+    ksuctl(ksu_uapi::KSU_IOCTL_UID_GRANTED_ROOT, &raw mut cmd)?;
+    Ok(cmd.granted != 0)
+}
+
+pub fn manager_appid() -> Result<u32> {
+    let mut cmd = ksu_uapi::ksu_get_manager_appid_cmd { appid: u32::MAX };
+    ksuctl(ksu_uapi::KSU_IOCTL_GET_MANAGER_APPID, &raw mut cmd)?;
+    Ok(cmd.appid)
+}
+
+pub fn set_default_app_grant(package: &str, uid: i32, granted: bool) -> Result<()> {
+    let mut get: ksu_uapi::ksu_get_app_profile_cmd = unsafe { std::mem::zeroed() };
+    get.profile.version = ksu_uapi::KSU_APP_PROFILE_VER;
+    get.profile.curr_uid = uid;
+    for (dest, source) in get.profile.key.iter_mut().zip(package.bytes()) {
+        *dest = source as libc::c_char;
+    }
+    let found = match ksuctl(ksu_uapi::KSU_IOCTL_GET_APP_PROFILE, &raw mut get) {
+        Ok(_) => true,
+        Err(error)
+            if error
+                .downcast_ref::<io::Error>()
+                .and_then(io::Error::raw_os_error)
+                == Some(libc::ENOENT) =>
+        {
+            false
+        }
+        Err(error) => return Err(error),
+    };
+    if found && get.profile.allow_su == granted {
+        return Ok(());
+    }
+    // A grant change uses the kernel's default profile, as in the Manager.
+    get.profile.allow_su = granted;
+    get.profile.__bindgen_anon_1 = unsafe { std::mem::zeroed() };
+    if granted {
+        get.profile.__bindgen_anon_1.rp_config.use_default = true;
+    } else {
+        get.profile.__bindgen_anon_1.nrp_config.use_default = true;
+    }
+    let mut set = ksu_uapi::ksu_set_app_profile_cmd {
+        profile: get.profile,
+    };
+    ksuctl(ksu_uapi::KSU_IOCTL_SET_APP_PROFILE, &raw mut set)?;
+    Ok(())
 }
 
 pub fn get_sulog_fd() -> Result<RawFd> {

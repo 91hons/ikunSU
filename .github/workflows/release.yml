@@ -1,71 +1,87 @@
-name: Release
+name: Release ikunSU
+
 on:
   push:
     tags:
       - "v*"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ikunSU-release-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
+  preflight:
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.version.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Require an existing release tag matching version.properties
+        id: version
+        env:
+          KEYSTORE_PRESENT: ${{ secrets.KEYSTORE }}
+          STORE_PASSWORD_PRESENT: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS_PRESENT: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD_PRESENT: ${{ secrets.KEY_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "$GITHUB_REF_TYPE" != tag ]; then
+            echo 'Select an existing release tag in Run workflow; running Release from a branch is refused.' >&2
+            exit 1
+          fi
+          test "$(git rev-parse "$GITHUB_REF^{commit}")" = "$GITHUB_SHA"
+          python3 - <<'PY'
+          import os
+          import runpy
+          from pathlib import Path
+          helpers = runpy.run_path('scripts/collect-lkm.py')
+          version = helpers['read_version'](Path('version.properties'))
+          tag = 'v' + version['name']
+          if os.environ['GITHUB_REF_NAME'] != tag:
+              raise SystemExit('Release tag must match version.properties: ' + tag)
+          with open(os.environ['GITHUB_OUTPUT'], 'a', encoding='utf-8') as output:
+              output.write('tag=' + tag + '\n')
+          PY
+          if [ -z "$KEYSTORE_PRESENT" ] || [ -z "$STORE_PASSWORD_PRESENT" ] || [ -z "$KEY_ALIAS_PRESENT" ] || [ -z "$KEY_PASSWORD_PRESENT" ]; then
+            echo 'Release requires KEYSTORE, KEYSTORE_PASSWORD, KEY_ALIAS, and KEY_PASSWORD repository secrets.' >&2
+            exit 1
+          fi
+
   build-manager:
+    needs: preflight
     uses: ./.github/workflows/build-manager.yml
     secrets: inherit
   release:
     needs:
+      - preflight
       - build-manager
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
+      - uses: actions/checkout@v7
       - name: Download artifacts
         uses: actions/download-artifact@v8
-
-      - name: Rename ksud
+        with:
+          path: artifacts
+      - name: Verify the complete release and permanent APK signing identity
+        env:
+          RELEASE_TAG: ${{ needs.preflight.outputs.tag }}
         run: |
-          mkdir -p ksud
-          for dir in ./ksud-*; do
-            if [ -d "$dir" ]; then
-                echo "----- Rename $dir -----"
-                ksud_platform_name=$(basename "$dir")
-                if [ -f "$dir/ksud" ]; then
-                  mv "$dir/ksud" "ksud/$ksud_platform_name"
-                elif [ -f "$dir/ksud.exe" ]; then
-                  mv "$dir/ksud.exe" "ksud/$ksud_platform_name.exe"
-                fi
-            fi
-          done
-
-      - name: Rename ksuinit
-        run: |
-          mkdir -p ksuinit
-          for dir in ./ksuinit-*; do
-            if [ -d "$dir" ]; then
-                echo "----- Rename $dir -----"
-                ksuinit_platform_name=$(basename "$dir")
-                if [ -f "$dir/ksuinit" ]; then
-                  mv "$dir/ksuinit" "ksuinit/$ksuinit_platform_name"
-                fi
-            fi
-          done
-
-      - name: Rename lkm
-        run: |
-          mkdir -p lkm
-          for dir in ./*-android*-lkm; do
-            if [ -d "$dir" ]; then
-                echo "----- Rename $dir -----"
-                lkm_platform_name=$(basename "$dir")
-                lkm_platform_name="lkm-${lkm_platform_name%-lkm}_kernelsu.ko"
-                KO="$(ls $dir/*_kernelsu.ko)"
-                mv "$KO" "lkm/$lkm_platform_name"
-            fi
-          done
-
-      - name: Display structure of downloaded files
-        run: ls -R
-
-      - name: release
+          python3 scripts/collect-release.py --artifacts artifacts --output dist/release \
+            --tag "$RELEASE_TAG" --commit "$GITHUB_SHA"
+      - name: Publish the validated assets
         uses: softprops/action-gh-release@v3
         with:
-          files: |
-            manager/*.apk
-            lkm/lkm-*_kernelsu.ko
-            ksud/ksud-*
-            ksuinit/*
+          tag_name: ${{ needs.preflight.outputs.tag }}
+          name: ikunSU ${{ needs.preflight.outputs.tag }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: dist/release/*

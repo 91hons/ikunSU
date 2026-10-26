@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.agp.app) apply false
     alias(libs.plugins.kotlin) apply false
@@ -15,21 +17,18 @@ extra["androidTargetCompatibility"] = JavaVersion.VERSION_21
 extra["managerVersionCode"] = getVersionCode()
 extra["managerVersionName"] = getVersionName()
 
-fun getGitCommitCount(): Int {
-    val process = Runtime.getRuntime().exec(arrayOf("git", "rev-list", "--count", "HEAD"))
-    return process.inputStream.bufferedReader().use { it.readText().trim().toInt() }
-}
-
-fun getGitDescribe(): String {
-    val process = Runtime.getRuntime().exec(arrayOf("git", "describe", "--tags", "--always"))
-    return process.inputStream.bufferedReader().use { it.readText().trim() }
+fun releaseVersion(): Properties {
+    return Properties().apply {
+        rootProject.file("../version.properties").inputStream().use { load(it) }
+    }
 }
 
 fun getVersionCode(): Int {
-    val commitCount = getGitCommitCount()
-    return 30000 + commitCount
+    return providers.gradleProperty("KSU_VERSION_CODE").orNull?.toInt()
+        ?: releaseVersion().getProperty("KSU_VERSION_CODE").toInt()
 }
 
 fun getVersionName(): String {
-    return getGitDescribe()
+    return providers.gradleProperty("KSU_VERSION_NAME").orNull
+        ?: releaseVersion().getProperty("KSU_VERSION_NAME")
 }

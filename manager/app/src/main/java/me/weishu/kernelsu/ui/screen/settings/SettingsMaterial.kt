@@ -151,6 +151,16 @@ fun SettingPagerMaterial(
             )
 
             val profileTemplate = stringResource(id = R.string.settings_profile_template)
+            SegmentedColumn(modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 13.dp)) {
+                item {
+                    SegmentedListItem(
+                        onClick = actions.onOpenIkunSettings,
+                        headlineContent = { Text(stringResource(R.string.ikun_settings_title)) },
+                        supportingContent = { Text(stringResource(R.string.ikun_settings_summary)) },
+                        leadingContent = { Icon(Icons.Filled.Palette, null) },
+                    )
+                }
+            }
             KsuIsValid {
                 SegmentedColumn(
                     modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 13.dp),

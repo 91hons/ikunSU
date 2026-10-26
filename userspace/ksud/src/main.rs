@@ -54,6 +54,7 @@ mod restorecon;
 mod sepolicy;
 #[cfg(target_os = "android")]
 mod soft_reboot;
+mod stealth;
 #[cfg(target_os = "android")]
 mod su;
 #[cfg(target_os = "android")]
@@ -62,6 +63,12 @@ mod sulog;
 mod unload;
 #[cfg(target_os = "android")]
 mod utils;
+#[cfg(target_os = "android")]
+mod webui;
+#[cfg(target_os = "android")]
+mod webui_apps;
+#[cfg(any(target_os = "android", test))]
+mod webui_auth;
 
 #[cfg(target_os = "android")]
 #[allow(nonstandard_style, unused, unsafe_op_in_unsafe_fn)]

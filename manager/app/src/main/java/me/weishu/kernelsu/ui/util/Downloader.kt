@@ -1,6 +1,7 @@
 package me.weishu.kernelsu.ui.util
 
 import android.net.Uri
+import me.weishu.kernelsu.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.onEach
@@ -53,7 +54,7 @@ internal suspend fun isDownloadAvailable(uri: Uri): Boolean = withContext(Dispat
 
 fun checkNewVersion(): LatestVersionInfo {
     if (!isNetworkAvailable(ksuApp)) return LatestVersionInfo()
-    val url = "https://api.github.com/repos/tiann/KernelSU/releases/latest"
+    val url = "https://api.github.com/repos/${BuildConfig.UPDATE_REPOSITORY}/releases/latest"
     // default null value if failed
     val defaultValue = LatestVersionInfo()
     runCatching {
