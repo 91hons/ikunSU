@@ -367,6 +367,29 @@ Java_me_weishu_kernelsu_Natives_setSelinuxHideEnabled(JNIEnv *env, jobject thiz,
 
 extern "C"
 JNIEXPORT jboolean JNICALL
+Java_me_weishu_kernelsu_Natives_isMountHideEnabled(JNIEnv *env, jobject thiz) {
+    return is_mount_hide_enabled();
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_me_weishu_kernelsu_Natives_setMountHideEnabled(JNIEnv *env, jobject thiz, jboolean enabled) {
+    return set_mount_hide_enabled(enabled);
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_me_weishu_kernelsu_Natives_setSpoofVersion(JNIEnv *env, jobject thiz, jstring release, jstring version) {
+    const char *releaseStr = release != nullptr ? env->GetStringUTFChars(release, nullptr) : nullptr;
+    const char *versionStr = version != nullptr ? env->GetStringUTFChars(version, nullptr) : nullptr;
+    int result = set_spoof_version(releaseStr, versionStr);
+    if (releaseStr != nullptr) env->ReleaseStringUTFChars(release, releaseStr);
+    if (versionStr != nullptr) env->ReleaseStringUTFChars(version, versionStr);
+    return result;
+}
+
+extern "C"
+JNIEXPORT jboolean JNICALL
 Java_me_weishu_kernelsu_Natives_isAvcSpoofEnabled(JNIEnv *env, jobject thiz) {
     return is_avc_spoof_enabled();
 }

@@ -18,6 +18,12 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.LargeFlexibleTopAppBar
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +49,8 @@ import kotlin.math.roundToInt
 
 @Composable
 internal fun IkunSettingsMaterial(state: IkunSettingsUiState, actions: IkunSettingsActions) {
+    var spoofRelease by remember { mutableStateOf("") }
+    var spoofVersion by remember { mutableStateOf("") }
     val scrollBehavior = TopAppBarDefaults.exitUntilCollapsedScrollBehavior(rememberTopAppBarState())
     ExpressiveScaffold(
         topBar = {
@@ -86,6 +94,38 @@ internal fun IkunSettingsMaterial(state: IkunSettingsUiState, actions: IkunSetti
                                     Text(stringResource(R.string.ikun_background_clear))
                                 }
                             }
+                        }
+                    }
+                }
+            }
+            item {
+                TonalCard(Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text(stringResource(R.string.ikun_spoof_version), style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            stringResource(R.string.ikun_spoof_version_summary),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                        OutlinedTextField(
+                            value = spoofRelease,
+                            onValueChange = { spoofRelease = it },
+                            label = { Text(stringResource(R.string.ikun_spoof_release)) },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        OutlinedTextField(
+                            value = spoofVersion,
+                            onValueChange = { spoofVersion = it },
+                            label = { Text(stringResource(R.string.ikun_spoof_version_field)) },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                        FilledTonalButton(
+                            onClick = { me.weishu.kernelsu.Natives.setSpoofVersion(spoofRelease, spoofVersion) },
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            Text(stringResource(R.string.ikun_spoof_apply))
                         }
                     }
                 }

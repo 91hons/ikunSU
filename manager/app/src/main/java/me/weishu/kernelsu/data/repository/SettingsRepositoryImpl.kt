@@ -203,6 +203,10 @@ class SettingsRepositoryImpl : SettingsRepository {
 
     override fun setSelinuxHideEnabled(enabled: Boolean): Int = Natives.setSelinuxHideEnabled(enabled)
 
+    override fun isMountHideEnabled(): Boolean = Natives.isMountHideEnabled()
+
+    override fun setMountHideEnabled(enabled: Boolean): Int = Natives.setMountHideEnabled(enabled)
+
     override fun isAvcSpoofEnabled(): Boolean = Natives.isAvcSpoofEnabled()
 
     override fun setAvcSpoofEnabled(enabled: Boolean): Int = Natives.setAvcSpoofEnabled(enabled)

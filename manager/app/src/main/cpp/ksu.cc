@@ -229,6 +229,39 @@ int set_selinux_hide_enabled(bool enabled) {
     return 0;
 }
 
+int set_mount_hide_enabled(bool enabled) {
+    if (!set_feature(KSU_FEATURE_MOUNT_HIDE, enabled ? 1 : 0)) {
+        return -errno;
+    }
+    return 0;
+}
+
+bool is_mount_hide_enabled() {
+    uint64_t value = 0;
+    bool supported = false;
+    if (!get_feature(KSU_FEATURE_MOUNT_HIDE, &value, &supported)) {
+        return false;
+    }
+    if (!supported) {
+        return false;
+    }
+    return value != 0;
+}
+
+int set_spoof_version(const char *release, const char *version) {
+    struct ksu_set_spoof_version_cmd cmd = {};
+    if (release != nullptr) {
+        std::strncpy(cmd.release, release, sizeof(cmd.release) - 1);
+    }
+    if (version != nullptr) {
+        std::strncpy(cmd.version, version, sizeof(cmd.version) - 1);
+    }
+    if (ksuctl(KSU_IOCTL_SET_SPOOF_VERSION, &cmd) < 0) {
+        return -errno;
+    }
+    return 0;
+}
+
 int set_avc_spoof_enabled(bool enabled) {
     if (!set_feature(KSU_FEATURE_AVC_SPOOF, enabled ? 1 : 0)) {
         return -errno;

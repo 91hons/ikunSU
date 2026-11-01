@@ -10,6 +10,7 @@ enum ksu_feature_id {
     // 5 was webview_zygote_umount (v3.3.0), keep it unused so stale configs don't apply
     KSU_FEATURE_SHELL_SU_ADB_ONLY = 6,
     KSU_FEATURE_AVC_SPOOF = 7,
+    KSU_FEATURE_MOUNT_HIDE = 8,
 
     KSU_FEATURE_MAX
 };

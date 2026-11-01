@@ -8,7 +8,11 @@
     <string name="ikun_background_clear">Remove background</string>
     <string name="ikun_background_set">Set</string>
     <string name="ikun_background_unset">Not set</string>
-    <string name="ikun_falling">Falling animation</string>
+    <string name="ikun_spoof_version">Kernel version spoof</string>
+    <string name="ikun_spoof_version_summary">Rewrite utsname release/version so root checks see a stock kernel. Leave a field empty to keep the real value.</string>
+    <string name="ikun_spoof_release">release (e.g. 6.1.118-android14-11-o-g64180ab070e5)</string>
+    <string name="ikun_spoof_version_field">version (e.g. #1 SMP PREEMPT)</string>
+    <string name="ikun_spoof_apply">Apply</string>    <string name="ikun_falling">Falling animation</string>
     <string name="ikun_snow">Use snow particles instead of ikun images</string>
     <string name="ikun_particle_size">Particle size</string>
     <string name="ikun_particle_speed">Falling speed</string>

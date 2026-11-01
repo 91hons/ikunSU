@@ -1,5 +1,15 @@
 package me.weishu.kernelsu.ui.screen.ikun
 
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.FilledTonalButton
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.Column
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,6 +65,8 @@ import kotlin.math.roundToInt
 
 @Composable
 internal fun IkunSettingsMiuix(state: IkunSettingsUiState, actions: IkunSettingsActions) {
+    var spoofRelease by remember { mutableStateOf("") }
+    var spoofVersion by remember { mutableStateOf("") }
     val scrollBehavior = MiuixScrollBehavior()
     val backdrop = rememberBlurBackdrop(LocalEnableBlur.current)
     val barColor = if (backdrop != null) Color.Transparent else colorScheme.surface
@@ -116,6 +128,38 @@ internal fun IkunSettingsMiuix(state: IkunSettingsUiState, actions: IkunSettings
                                 title = stringResource(R.string.ikun_background_clear),
                                 onClick = actions.onClearBackground,
                             )
+                        }
+                    }
+                }
+                item {
+                    Card(Modifier.padding(top = 12.dp).fillMaxWidth()) {
+                        Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                            Text(stringResource(R.string.ikun_spoof_version), style = MaterialTheme.typography.titleMedium)
+                            Text(
+                                stringResource(R.string.ikun_spoof_version_summary),
+                                color = colorScheme.onSurfaceVariantSummary,
+                                style = MaterialTheme.typography.bodySmall,
+                            )
+                            OutlinedTextField(
+                                value = spoofRelease,
+                                onValueChange = { spoofRelease = it },
+                                label = { Text(stringResource(R.string.ikun_spoof_release)) },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                            OutlinedTextField(
+                                value = spoofVersion,
+                                onValueChange = { spoofVersion = it },
+                                label = { Text(stringResource(R.string.ikun_spoof_version_field)) },
+                                singleLine = true,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                            FilledTonalButton(
+                                onClick = { me.weishu.kernelsu.Natives.setSpoofVersion(spoofRelease, spoofVersion) },
+                                modifier = Modifier.fillMaxWidth(),
+                            ) {
+                                Text(stringResource(R.string.ikun_spoof_apply))
+                            }
                         }
                     }
                 }

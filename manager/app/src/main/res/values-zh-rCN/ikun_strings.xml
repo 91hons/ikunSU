@@ -8,7 +8,11 @@
     <string name="ikun_background_clear">&#31227;&#38500;&#32972;&#26223;</string>
     <string name="ikun_background_set">&#24050;&#35774;&#32622;</string>
     <string name="ikun_background_unset">&#26410;&#35774;&#32622;</string>
-    <string name="ikun_falling">&#23631;&#24149;&#39128;&#33853;&#21160;&#30011;</string>
+    <string name="ikun_spoof_version">&#20869;&#26680;&#29256;&#26412;&#20266;&#35013;</string>
+    <string name="ikun_spoof_version_summary">&#20462;&#25913; utsname &#30340; release/version&#65292;&#35753; root &#26816;&#27979;&#30475;&#21040;&#8220;&#21407;&#29983;&#8221;&#20869;&#26680;&#12290;&#30041;&#31354;&#30340;&#23383;&#27573;&#20445;&#25345;&#30495;&#23454;&#20540;&#12290;</string>
+    <string name="ikun_spoof_release">release&#65288;&#22914; 6.1.118-android14-11-o-g64180ab070e5&#65289;</string>
+    <string name="ikun_spoof_version_field">version&#65288;&#22914; #1 SMP PREEMPT&#65289;</string>
+    <string name="ikun_spoof_apply">&#24212;&#29992;</string>    <string name="ikun_falling">&#23631;&#24149;&#39128;&#33853;&#21160;&#30011;</string>
     <string name="ikun_snow">&#20351;&#29992;&#38634;&#33457;&#31890;&#23376;&#65288;&#20851;&#38381;&#21518;&#20026; ikun &#39128;&#33853;&#65289;</string>
     <string name="ikun_particle_size">&#39128;&#33853;&#22823;&#23567;</string>
     <string name="ikun_particle_speed">&#39128;&#33853;&#36895;&#24230;</string>

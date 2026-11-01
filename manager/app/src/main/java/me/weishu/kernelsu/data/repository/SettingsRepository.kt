@@ -46,6 +46,8 @@ interface SettingsRepository {
     suspend fun getSelinuxHideStatus(): String
     fun isSelinuxHideEnabled(): Boolean
     fun setSelinuxHideEnabled(enabled: Boolean): Int
+    fun isMountHideEnabled(): Boolean
+    fun setMountHideEnabled(enabled: Boolean): Int
     fun isAvcSpoofEnabled(): Boolean
     fun setAvcSpoofEnabled(enabled: Boolean): Int
 

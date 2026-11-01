@@ -57,6 +57,8 @@ kernelsu-objs += feature/adb_root.o
 
 kernelsu-objs += feature/selinux_hide.o
 kernelsu-objs += feature/avc_spoof.o
+kernelsu-objs += feature/mount_hide.o
+kernelsu-objs += feature/uts_spoof.o
 kernelsu-objs += feature/shell_su_adb_only.o
 
 ifdef KBUILD_EXTMOD

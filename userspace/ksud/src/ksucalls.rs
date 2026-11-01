@@ -289,6 +289,19 @@ pub fn set_feature(feature_id: u32, value: u64) -> Result<()> {
     Ok(())
 }
 
+pub fn set_spoof_version(release: &str, version: &str) -> Result<()> {
+    // SAFETY: the command struct is plain old data and bindgen does not derive Default for it.
+    let mut cmd: ksu_uapi::ksu_set_spoof_version_cmd = unsafe { std::mem::zeroed() };
+    for (dst, src) in cmd.release.iter_mut().zip(release.as_bytes()) {
+        *dst = *src as _;
+    }
+    for (dst, src) in cmd.version.iter_mut().zip(version.as_bytes()) {
+        *dst = *src as _;
+    }
+    ksuctl(ksu_uapi::KSU_IOCTL_SET_SPOOF_VERSION, &raw mut cmd)?;
+    Ok(())
+}
+
 pub fn get_wrapped_fd(fd: RawFd) -> Result<RawFd> {
     let mut cmd = ksu_uapi::ksu_get_wrapper_fd_cmd {
         fd: fd as u32,

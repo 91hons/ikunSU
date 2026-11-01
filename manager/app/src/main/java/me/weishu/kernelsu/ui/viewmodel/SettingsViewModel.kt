@@ -69,6 +69,7 @@ class SettingsViewModel(
             val selinuxHideStatus = repo.getSelinuxHideStatus()
             val isSelinuxHideEnabled = repo.isSelinuxHideEnabled()
         val isAvcSpoofEnabled = repo.isAvcSpoofEnabled()
+        val isMountHideEnabled = repo.isMountHideEnabled()
             val sulogStatus = repo.getSulogStatus()
             val isSulogEnabled = if (sulogStatus == "forced") {
                 repo.getSulogValue() == 1L
@@ -125,6 +126,7 @@ class SettingsViewModel(
                     selinuxHideStatus = selinuxHideStatus,
                     isSelinuxHideEnabled = isSelinuxHideEnabled,
             isAvcSpoofEnabled = isAvcSpoofEnabled,
+            isMountHideEnabled = isMountHideEnabled,
                     sulogStatus = sulogStatus,
                     isSulogEnabled = isSulogEnabled,
                     isDefaultUmountModules = isDefaultUmountModules,
@@ -308,6 +310,14 @@ class SettingsViewModel(
         }
     }
 
+    fun setMountHideEnabled(enabled: Boolean) {
+        viewModelScope.launch(Dispatchers.IO) {
+            if (repo.setMountHideEnabled(enabled) == 0) {
+                repo.execKsudFeatureSave()
+                _uiState.update { it.copy(isMountHideEnabled = enabled) }
+            }
+        }
+    }
     fun setAvcSpoofEnabled(enabled: Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             if (repo.setAvcSpoofEnabled(enabled) == 0) {
