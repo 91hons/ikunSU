@@ -80,10 +80,15 @@ fun MiuixKernelSUTheme(
             val background = me.weishu.kernelsu.ui.cosmetic.LocalBackgroundState.current
             if (background.enabled) {
                 val base = MiuixTheme.colorScheme
+                val a = background.alpha.coerceIn(0.15f, 1f)
                 MiuixTheme(
                     base.copy(
-                        background = base.background.copy(alpha = background.alpha.coerceIn(0.3f, 1f)),
-                        surface = base.surface.copy(alpha = background.alpha.coerceIn(0.3f, 1f)),
+                        background = base.background.copy(alpha = a),
+                        surface = base.surface.copy(alpha = a),
+                        surfaceVariant = base.surfaceVariant.copy(alpha = a),
+                        surfaceContainer = base.surfaceContainer.copy(alpha = a),
+                        surfaceContainerHigh = base.surfaceContainerHigh.copy(alpha = a),
+                        surfaceContainerHighest = base.surfaceContainerHighest.copy(alpha = a),
                     )
                 ) {
                     CompositionLocalProvider(

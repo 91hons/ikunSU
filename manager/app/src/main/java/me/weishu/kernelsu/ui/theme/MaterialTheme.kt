@@ -62,6 +62,7 @@ fun MaterialKernelSUTheme(
  * but lose some opacity.
  */
 private fun ColorScheme.withBackgroundTranslucency(alpha: Float): ColorScheme = copy(
+    background = background.copy(alpha = alpha.coerceAtMost(1f)),
     surface = surface.copy(alpha = (alpha + 0.04f).coerceAtMost(1f)),
     surfaceContainer = surfaceContainer.copy(alpha = alpha.coerceAtMost(1f)),
     surfaceContainerHigh = surfaceContainerHigh.copy(alpha = (alpha + 0.04f).coerceAtMost(1f)),
