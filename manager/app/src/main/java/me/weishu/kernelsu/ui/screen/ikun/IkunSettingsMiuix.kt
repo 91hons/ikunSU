@@ -98,6 +98,29 @@ internal fun IkunSettingsMiuix(state: IkunSettingsUiState, actions: IkunSettings
             ) {
                 item {
                     Card(Modifier.padding(top = 12.dp).fillMaxWidth()) {
+                        BasicComponent(
+                            title = stringResource(R.string.ikun_background),
+                            summary = stringResource(R.string.ikun_background_summary),
+                            onClick = actions.onPickBackground,
+                            endActions = {
+                                Text(
+                                    stringResource(
+                                        if (state.backgroundSet) R.string.ikun_background_set else R.string.ikun_background_unset
+                                    ),
+                                    color = colorScheme.onSurfaceVariantActions,
+                                )
+                            },
+                        )
+                        if (state.backgroundSet) {
+                            BasicComponent(
+                                title = stringResource(R.string.ikun_background_clear),
+                                onClick = actions.onClearBackground,
+                            )
+                        }
+                    }
+                }
+                item {
+                    Card(Modifier.padding(top = 12.dp).fillMaxWidth()) {
                         SwitchPreference(
                             title = stringResource(R.string.ikun_falling),
                             checked = state.falling,

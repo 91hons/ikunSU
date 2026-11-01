@@ -1,6 +1,9 @@
 package me.weishu.kernelsu.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.ui.Modifier
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -107,16 +110,23 @@ fun KernelSUTheme(
     content: @Composable () -> Unit
 ) {
 
-    when (uiMode) {
-        UiMode.Miuix -> MiuixKernelSUTheme(
-            appSettings = appSettings,
-            content = content
-        )
+    val background = me.weishu.kernelsu.ui.cosmetic.LocalBackgroundState.current
 
-        UiMode.Material -> MaterialKernelSUTheme(
-            appSettings = appSettings,
-            content = content
-        )
+    Box(Modifier.fillMaxSize()) {
+        me.weishu.kernelsu.ui.cosmetic.BackgroundLayer(background)
+        Box(Modifier.fillMaxSize()) {
+            when (uiMode) {
+                UiMode.Miuix -> MiuixKernelSUTheme(
+                    appSettings = appSettings,
+                    content = content
+                )
+
+                UiMode.Material -> MaterialKernelSUTheme(
+                    appSettings = appSettings,
+                    content = content
+                )
+            }
+        }
     }
 }
 

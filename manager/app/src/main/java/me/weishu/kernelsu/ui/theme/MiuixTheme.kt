@@ -77,10 +77,27 @@ fun MiuixKernelSUTheme(
                 }
             }
             MonetColorsProvider.UpdateCss()
-            CompositionLocalProvider(
-                LocalContentColor provides MiuixTheme.colorScheme.onBackground,
-            ) {
-                content()
+            val background = me.weishu.kernelsu.ui.cosmetic.LocalBackgroundState.current
+            if (background.enabled) {
+                val base = MiuixTheme.colorScheme
+                MiuixTheme(
+                    base.copy(
+                        background = base.background.copy(alpha = 0.82f),
+                        surface = base.surface.copy(alpha = 0.82f),
+                    )
+                ) {
+                    CompositionLocalProvider(
+                        LocalContentColor provides MiuixTheme.colorScheme.onBackground,
+                    ) {
+                        content()
+                    }
+                }
+            } else {
+                CompositionLocalProvider(
+                    LocalContentColor provides MiuixTheme.colorScheme.onBackground,
+                ) {
+                    content()
+                }
             }
         }
     )

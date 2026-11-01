@@ -65,6 +65,34 @@ internal fun IkunSettingsMaterial(state: IkunSettingsUiState, actions: IkunSetti
             item {
                 TonalCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Text(stringResource(R.string.ikun_background), style = MaterialTheme.typography.titleMedium)
+                        Text(
+                            stringResource(R.string.ikun_background_summary),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                        Text(
+                            stringResource(
+                                if (state.backgroundSet) R.string.ikun_background_set else R.string.ikun_background_unset
+                            ),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            FilledTonalButton(onClick = actions.onPickBackground, modifier = Modifier.weight(1f)) {
+                                Text(stringResource(R.string.ikun_background_pick))
+                            }
+                            if (state.backgroundSet) {
+                                Button(onClick = actions.onClearBackground, modifier = Modifier.weight(1f)) {
+                                    Text(stringResource(R.string.ikun_background_clear))
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            item {
+                TonalCard(Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Toggle(stringResource(R.string.ikun_falling), state.falling, onCheckedChange = actions.onSetFalling)
                         Toggle(stringResource(R.string.ikun_snow), state.snow, onCheckedChange = actions.onSetSnow)
                         SliderOption(

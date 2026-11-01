@@ -2,6 +2,12 @@
 <resources>
     <string name="ikun_settings_title">ikunSU features</string>
     <string name="ikun_settings_summary">Falling animation, dialer recovery and web manager</string>
+    <string name="ikun_background">Background image</string>
+    <string name="ikun_background_summary">Show a picture behind the whole interface; cards become translucent so it stays visible.</string>
+    <string name="ikun_background_pick">Choose image</string>
+    <string name="ikun_background_clear">Remove background</string>
+    <string name="ikun_background_set">Set</string>
+    <string name="ikun_background_unset">Not set</string>
     <string name="ikun_falling">Falling animation</string>
     <string name="ikun_snow">Use snow particles instead of ikun images</string>
     <string name="ikun_particle_size">Particle size</string>

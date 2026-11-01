@@ -10,6 +10,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.LifecycleResumeEffect
@@ -19,6 +21,7 @@ import kotlinx.coroutines.withContext
 import me.weishu.kernelsu.R
 import me.weishu.kernelsu.ui.LocalUiMode
 import me.weishu.kernelsu.ui.UiMode
+import me.weishu.kernelsu.ui.cosmetic.BackgroundStore
 import me.weishu.kernelsu.ui.cosmetic.LocalCosmeticState
 import me.weishu.kernelsu.ui.navigation3.LocalNavigator
 import me.weishu.kernelsu.ui.stealth.StealthController
@@ -33,6 +36,7 @@ internal data class IkunSettingsUiState(
     val hidden: Boolean,
     val recoveryCode: String,
     val autostart: Boolean,
+    val backgroundSet: Boolean,
     val busy: Boolean,
     val message: String,
 )
@@ -49,6 +53,8 @@ internal data class IkunSettingsActions(
     val onOpenWebManager: () -> Unit,
     val onStopWebManager: () -> Unit,
     val onSetAutostart: (Boolean) -> Unit,
+    val onPickBackground: () -> Unit,
+    val onClearBackground: () -> Unit,
 )
 
 @Composable
@@ -59,6 +65,13 @@ fun IkunSettingsScreen() {
     val uriHandler = LocalUriHandler.current
     val scope = rememberCoroutineScope()
     var hidden by remember { mutableStateOf(StealthController.isHidden(context)) }
+    var backgroundSet by remember { mutableStateOf(BackgroundStore.load(context).enabled) }
+    val pickBackground = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) {
+            BackgroundStore.setUri(context, uri)
+            backgroundSet = true
+        }
+    }
     var autostart by remember { mutableStateOf(false) }
     var busy by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
@@ -116,6 +129,7 @@ fun IkunSettingsScreen() {
         hidden = hidden,
         recoveryCode = StealthController.DIAL_CODE,
         autostart = autostart,
+        backgroundSet = backgroundSet,
         busy = busy,
         message = message,
     )
@@ -158,6 +172,11 @@ fun IkunSettingsScreen() {
         },
         onOpenWebManager = { operation("webui start", open = true) },
         onStopWebManager = { operation("webui stop") },
+        onPickBackground = { pickBackground.launch(arrayOf("image/*")) },
+        onClearBackground = {
+            BackgroundStore.setUri(context, null)
+            backgroundSet = false
+        },
         onSetAutostart = { value ->
             if (!busy) {
                 busy = true

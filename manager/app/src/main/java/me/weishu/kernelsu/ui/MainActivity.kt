@@ -59,7 +59,9 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.withContext
 import me.weishu.kernelsu.Natives
+import me.weishu.kernelsu.ui.cosmetic.BackgroundStore
 import me.weishu.kernelsu.ui.cosmetic.CosmeticState
+import me.weishu.kernelsu.ui.cosmetic.LocalBackgroundState
 import me.weishu.kernelsu.ui.cosmetic.LocalCosmeticState
 import me.weishu.kernelsu.ui.cosmetic.FallingOverlay
 import me.weishu.kernelsu.ui.screen.ikun.IkunSettingsScreen
@@ -155,6 +157,8 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val cosmeticState = remember { CosmeticState(applicationContext) }
+        remember { BackgroundStore.init(applicationContext) }
+        val backgroundState by BackgroundStore.state.collectAsStateWithLifecycle()
             val viewModel = viewModel<MainActivityViewModel>()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
             val selectedMainPage by viewModel.selectedMainPage.collectAsStateWithLifecycle()
@@ -194,6 +198,7 @@ class MainActivity : ComponentActivity() {
                 LocalModuleDescriptionMaxLines provides uiState.moduleDescriptionMaxLines,
                 LocalUiMode provides uiMode,
                 LocalCosmeticState provides cosmeticState,
+                    LocalBackgroundState provides backgroundState,
             ) {
                 KernelSUTheme(appSettings = appSettings, uiMode = uiMode) {
                     IntentDispatcher(intentChannel = intentChannel)
