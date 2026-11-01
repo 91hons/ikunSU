@@ -65,9 +65,7 @@ impl FeatureId {
                 "SU Log - streams kernel sulog events to userspace and persists them to disk"
             }
             Self::AdbRoot => "ADB Root - Enable adbd root",
-            Self::AvcSpoof => {
-                "AVC Spoof - render su/ksu AVC denials with a private app SID"
-            }
+            Self::AvcSpoof => "AVC Spoof - render su/ksu AVC denials with a private app SID",
             Self::SelinuxHide => {
                 "SELinux Hide - sanitize /sys/fs/selinux access results for app UIDs"
             }

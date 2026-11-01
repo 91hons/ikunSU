@@ -109,8 +109,7 @@ static int get_avc_sids(void)
     }
     pr_info("avc_spoof: ksu SID: %u\n", ksu_sid);
 
-    ret = security_secctx_to_secid("u:r:priv_app:s0:c512,c768",
-                                   strlen("u:r:priv_app:s0:c512,c768"), &priv_app_sid);
+    ret = security_secctx_to_secid("u:r:priv_app:s0:c512,c768", strlen("u:r:priv_app:s0:c512,c768"), &priv_app_sid);
     if (ret) {
         pr_info("avc_spoof: priv_app SID not found\n");
         return ret;
