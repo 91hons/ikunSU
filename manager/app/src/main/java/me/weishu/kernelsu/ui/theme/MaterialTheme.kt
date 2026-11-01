@@ -41,7 +41,7 @@ fun MaterialKernelSUTheme(
 
     val animatedColorScheme = colorScheme.animateAsState()
     val themedColorScheme = if (me.weishu.kernelsu.ui.cosmetic.LocalBackgroundState.current.enabled) {
-        animatedColorScheme.withBackgroundTranslucency()
+        animatedColorScheme.withBackgroundTranslucency(me.weishu.kernelsu.ui.cosmetic.LocalBackgroundState.current.alpha)
     } else {
         animatedColorScheme
     }
@@ -61,11 +61,11 @@ fun MaterialKernelSUTheme(
  * Lets the user background show through the chrome: surfaces keep their colour
  * but lose some opacity.
  */
-private fun ColorScheme.withBackgroundTranslucency(): ColorScheme = copy(
-    surface = surface.copy(alpha = 0.82f),
-    surfaceContainer = surfaceContainer.copy(alpha = 0.78f),
-    surfaceContainerHigh = surfaceContainerHigh.copy(alpha = 0.82f),
-    surfaceContainerHighest = surfaceContainerHighest.copy(alpha = 0.86f),
-    surfaceContainerLow = surfaceContainerLow.copy(alpha = 0.74f),
-    surfaceContainerLowest = surfaceContainerLowest.copy(alpha = 0.7f),
+private fun ColorScheme.withBackgroundTranslucency(alpha: Float): ColorScheme = copy(
+    surface = surface.copy(alpha = (alpha + 0.04f).coerceAtMost(1f)),
+    surfaceContainer = surfaceContainer.copy(alpha = alpha.coerceAtMost(1f)),
+    surfaceContainerHigh = surfaceContainerHigh.copy(alpha = (alpha + 0.04f).coerceAtMost(1f)),
+    surfaceContainerHighest = surfaceContainerHighest.copy(alpha = (alpha + 0.08f).coerceAtMost(1f)),
+    surfaceContainerLow = surfaceContainerLow.copy(alpha = (alpha - 0.04f).coerceAtLeast(0.2f)),
+    surfaceContainerLowest = surfaceContainerLowest.copy(alpha = (alpha - 0.06f).coerceAtLeast(0.2f)),
 )

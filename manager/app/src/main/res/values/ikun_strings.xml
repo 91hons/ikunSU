@@ -12,7 +12,17 @@
     <string name="ikun_spoof_version_summary">Rewrite utsname release/version so root checks see a stock kernel. Leave a field empty to keep the real value.</string>
     <string name="ikun_spoof_release">release (e.g. 6.1.118-android14-11-o-g64180ab070e5)</string>
     <string name="ikun_spoof_version_field">version (e.g. #1 SMP PREEMPT)</string>
-    <string name="ikun_spoof_apply">Apply</string>    <string name="ikun_falling">Falling animation</string>
+    <string name="ikun_spoof_apply">Apply</string>    <string name="ikun_background_wallpaper">Use system wallpaper</string>
+    <string name="ikun_background_wallpaper_summary">Copy the current home screen wallpaper and use it as the app background</string>
+    <string name="ikun_background_alpha">Card opacity</string>
+    <string name="ikun_background_blur">Background blur</string>
+    <string name="ikun_background_dim">Background scrim</string>
+    <string name="ikun_theme_export">Export theme</string>
+    <string name="ikun_theme_export_summary">Save the current background and appearance as a .zip theme package</string>
+    <string name="ikun_theme_import">Import theme</string>
+    <string name="ikun_theme_import_summary">Apply a theme package exported by ikunSU</string>
+    <string name="ikun_theme_reset">Restore default</string>
+    <string name="ikun_theme_reset_summary">Reset background, card opacity, blur and scrim</string>    <string name="ikun_falling">Falling animation</string>
     <string name="ikun_snow">Use snow particles instead of ikun images</string>
     <string name="ikun_particle_size">Particle size</string>
     <string name="ikun_particle_speed">Falling speed</string>

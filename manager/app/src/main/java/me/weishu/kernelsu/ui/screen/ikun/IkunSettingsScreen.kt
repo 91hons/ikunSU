@@ -21,7 +21,9 @@ import kotlinx.coroutines.withContext
 import me.weishu.kernelsu.R
 import me.weishu.kernelsu.ui.LocalUiMode
 import me.weishu.kernelsu.ui.UiMode
+import androidx.compose.runtime.collectAsState
 import me.weishu.kernelsu.ui.cosmetic.BackgroundStore
+import me.weishu.kernelsu.ui.cosmetic.ThemePackage
 import me.weishu.kernelsu.ui.cosmetic.LocalCosmeticState
 import me.weishu.kernelsu.ui.navigation3.LocalNavigator
 import me.weishu.kernelsu.ui.stealth.StealthController
@@ -37,6 +39,9 @@ internal data class IkunSettingsUiState(
     val recoveryCode: String,
     val autostart: Boolean,
     val backgroundSet: Boolean,
+    val backgroundAlpha: Float,
+    val backgroundBlur: Float,
+    val backgroundDim: Float,
     val busy: Boolean,
     val message: String,
 )
@@ -55,6 +60,13 @@ internal data class IkunSettingsActions(
     val onSetAutostart: (Boolean) -> Unit,
     val onPickBackground: () -> Unit,
     val onClearBackground: () -> Unit,
+    val onSetBackgroundAlpha: (Float) -> Unit,
+    val onSetBackgroundBlur: (Float) -> Unit,
+    val onSetBackgroundDim: (Float) -> Unit,
+    val onUseSystemWallpaper: () -> Unit,
+    val onExportTheme: () -> Unit,
+    val onImportTheme: () -> Unit,
+    val onResetTheme: () -> Unit,
 )
 
 @Composable
@@ -66,12 +78,7 @@ fun IkunSettingsScreen() {
     val scope = rememberCoroutineScope()
     var hidden by remember { mutableStateOf(StealthController.isHidden(context)) }
     var backgroundSet by remember { mutableStateOf(BackgroundStore.load(context).enabled) }
-    val pickBackground = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
-        if (uri != null) {
-            BackgroundStore.setUri(context, uri)
-            backgroundSet = true
-        }
-    }
+    val backgroundState by BackgroundStore.state.collectAsState()
     var autostart by remember { mutableStateOf(false) }
     var busy by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
@@ -80,6 +87,32 @@ fun IkunSettingsScreen() {
     val copied = stringResource(R.string.ikun_code_copied)
     val dialerUnavailable = stringResource(R.string.ikun_dialer_unavailable)
     val recoveryUnavailable = stringResource(R.string.ikun_recovery_unavailable)
+    val exportTheme = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/zip")) { uri ->
+        if (uri != null) {
+            scope.launch {
+                message = if (withContext(Dispatchers.IO) { ThemePackage.export(context, uri) }) done else failed
+            }
+        }
+    }
+    val importTheme = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) {
+            scope.launch {
+                val ok = withContext(Dispatchers.IO) { ThemePackage.import(context, uri) }
+                if (ok) {
+                    backgroundSet = BackgroundStore.load(context).enabled
+                    message = done
+                } else {
+                    message = failed
+                }
+            }
+        }
+    }
+    val pickBackground = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) {
+            BackgroundStore.setUri(context, uri)
+            backgroundSet = true
+        }
+    }
 
     LifecycleResumeEffect(Unit) {
         hidden = StealthController.isHidden(context)
@@ -130,6 +163,9 @@ fun IkunSettingsScreen() {
         recoveryCode = StealthController.DIAL_CODE,
         autostart = autostart,
         backgroundSet = backgroundSet,
+        backgroundAlpha = backgroundState.alpha,
+        backgroundBlur = backgroundState.blur,
+        backgroundDim = backgroundState.dim,
         busy = busy,
         message = message,
     )
@@ -175,6 +211,19 @@ fun IkunSettingsScreen() {
         onPickBackground = { pickBackground.launch(arrayOf("image/*")) },
         onClearBackground = {
             BackgroundStore.setUri(context, null)
+            backgroundSet = false
+        },
+        onSetBackgroundAlpha = { BackgroundStore.setAlpha(context, it) },
+        onSetBackgroundBlur = { BackgroundStore.setBlur(context, it) },
+        onSetBackgroundDim = { BackgroundStore.setDim(context, it) },
+        onUseSystemWallpaper = {
+            backgroundSet = BackgroundStore.useSystemWallpaper(context)
+            message = if (backgroundSet) done else failed
+        },
+        onExportTheme = { exportTheme.launch("ikunSU-theme.zip") },
+        onImportTheme = { importTheme.launch(arrayOf("application/zip", "application/octet-stream")) },
+        onResetTheme = {
+            BackgroundStore.reset(context)
             backgroundSet = false
         },
         onSetAutostart = { value ->

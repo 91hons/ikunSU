@@ -95,6 +95,42 @@ internal fun IkunSettingsMaterial(state: IkunSettingsUiState, actions: IkunSetti
                                 }
                             }
                         }
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            FilledTonalButton(onClick = actions.onUseSystemWallpaper, modifier = Modifier.weight(1f)) {
+                                Text(stringResource(R.string.ikun_background_wallpaper))
+                            }
+                            Button(onClick = actions.onResetTheme, modifier = Modifier.weight(1f)) {
+                                Text(stringResource(R.string.ikun_theme_reset))
+                            }
+                        }
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                            FilledTonalButton(onClick = actions.onExportTheme, modifier = Modifier.weight(1f)) {
+                                Text(stringResource(R.string.ikun_theme_export))
+                            }
+                            Button(onClick = actions.onImportTheme, modifier = Modifier.weight(1f)) {
+                                Text(stringResource(R.string.ikun_theme_import))
+                            }
+                        }
+                        if (state.backgroundSet) {
+                            SliderOption(
+                                title = stringResource(R.string.ikun_background_alpha),
+                                value = state.backgroundAlpha,
+                                range = 0.3f..1f,
+                                onValueChange = actions.onSetBackgroundAlpha,
+                            )
+                            SliderOption(
+                                title = stringResource(R.string.ikun_background_blur),
+                                value = state.backgroundBlur,
+                                range = 0f..25f,
+                                onValueChange = actions.onSetBackgroundBlur,
+                            )
+                            SliderOption(
+                                title = stringResource(R.string.ikun_background_dim),
+                                value = state.backgroundDim,
+                                range = 0f..0.7f,
+                                onValueChange = actions.onSetBackgroundDim,
+                            )
+                        }
                     }
                 }
             }

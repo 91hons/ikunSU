@@ -128,7 +128,66 @@ internal fun IkunSettingsMiuix(state: IkunSettingsUiState, actions: IkunSettings
                                 title = stringResource(R.string.ikun_background_clear),
                                 onClick = actions.onClearBackground,
                             )
+                            BasicComponent(
+                                title = stringResource(R.string.ikun_background_alpha),
+                                endActions = {
+                                    Text("${(state.backgroundAlpha * 100).roundToInt()}%", color = colorScheme.onSurfaceVariantActions)
+                                },
+                                bottomAction = {
+                                    Slider(
+                                        value = state.backgroundAlpha,
+                                        onValueChange = actions.onSetBackgroundAlpha,
+                                        valueRange = 0.3f..1f,
+                                    )
+                                },
+                            )
+                            BasicComponent(
+                                title = stringResource(R.string.ikun_background_blur),
+                                endActions = {
+                                    Text("${state.backgroundBlur.roundToInt()}dp", color = colorScheme.onSurfaceVariantActions)
+                                },
+                                bottomAction = {
+                                    Slider(
+                                        value = state.backgroundBlur,
+                                        onValueChange = actions.onSetBackgroundBlur,
+                                        valueRange = 0f..25f,
+                                    )
+                                },
+                            )
+                            BasicComponent(
+                                title = stringResource(R.string.ikun_background_dim),
+                                endActions = {
+                                    Text("${(state.backgroundDim * 100).roundToInt()}%", color = colorScheme.onSurfaceVariantActions)
+                                },
+                                bottomAction = {
+                                    Slider(
+                                        value = state.backgroundDim,
+                                        onValueChange = actions.onSetBackgroundDim,
+                                        valueRange = 0f..0.7f,
+                                    )
+                                },
+                            )
                         }
+                        BasicComponent(
+                            title = stringResource(R.string.ikun_background_wallpaper),
+                            summary = stringResource(R.string.ikun_background_wallpaper_summary),
+                            onClick = actions.onUseSystemWallpaper,
+                        )
+                        BasicComponent(
+                            title = stringResource(R.string.ikun_theme_export),
+                            summary = stringResource(R.string.ikun_theme_export_summary),
+                            onClick = actions.onExportTheme,
+                        )
+                        BasicComponent(
+                            title = stringResource(R.string.ikun_theme_import),
+                            summary = stringResource(R.string.ikun_theme_import_summary),
+                            onClick = actions.onImportTheme,
+                        )
+                        BasicComponent(
+                            title = stringResource(R.string.ikun_theme_reset),
+                            summary = stringResource(R.string.ikun_theme_reset_summary),
+                            onClick = actions.onResetTheme,
+                        )
                     }
                 }
                 item {

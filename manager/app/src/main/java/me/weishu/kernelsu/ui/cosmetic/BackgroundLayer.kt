@@ -10,11 +10,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
@@ -41,10 +43,15 @@ fun BackgroundLayer(state: BackgroundState, modifier: Modifier = Modifier) {
 
     val image = bitmap ?: return
     Box(modifier.fillMaxSize()) {
+        val imageModifier = if (state.blur > 0f && android.os.Build.VERSION.SDK_INT >= 31) {
+            Modifier.fillMaxSize().blur(state.blur.dp)
+        } else {
+            Modifier.fillMaxSize()
+        }
         Image(
             bitmap = image,
             contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
+            modifier = imageModifier,
             contentScale = ContentScale.Crop,
         )
         if (state.dim > 0f) {

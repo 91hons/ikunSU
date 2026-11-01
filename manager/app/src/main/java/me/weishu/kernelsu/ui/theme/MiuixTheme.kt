@@ -82,8 +82,8 @@ fun MiuixKernelSUTheme(
                 val base = MiuixTheme.colorScheme
                 MiuixTheme(
                     base.copy(
-                        background = base.background.copy(alpha = 0.82f),
-                        surface = base.surface.copy(alpha = 0.82f),
+                        background = base.background.copy(alpha = background.alpha.coerceIn(0.3f, 1f)),
+                        surface = base.surface.copy(alpha = background.alpha.coerceIn(0.3f, 1f)),
                     )
                 ) {
                     CompositionLocalProvider(
