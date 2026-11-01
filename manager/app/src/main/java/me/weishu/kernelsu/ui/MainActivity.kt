@@ -157,7 +157,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val cosmeticState = remember { CosmeticState(applicationContext) }
-        remember { BackgroundStore.init(applicationContext) }
+        LaunchedEffect(Unit) { BackgroundStore.init(applicationContext) }
         val backgroundState by BackgroundStore.state.collectAsStateWithLifecycle()
             val viewModel = viewModel<MainActivityViewModel>()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()
