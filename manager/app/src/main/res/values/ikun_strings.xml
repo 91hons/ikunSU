@@ -22,7 +22,8 @@
     <string name="ikun_theme_import">Import theme</string>
     <string name="ikun_theme_import_summary">Apply a theme package exported by ikunSU</string>
     <string name="ikun_theme_reset">Restore default</string>
-    <string name="ikun_theme_reset_summary">Reset background, card opacity, blur and scrim</string>    <string name="ikun_falling">Falling animation</string>
+    <string name="ikun_theme_reset_summary">Reset background, card opacity, blur and scrim</string>    <string name="ikun_background_appearance">Background appearance</string>
+    <string name="ikun_background_appearance_summary">Card opacity, blur and scrim</string>    <string name="ikun_falling">Falling animation</string>
     <string name="ikun_snow">Use snow particles instead of ikun images</string>
     <string name="ikun_particle_size">Particle size</string>
     <string name="ikun_particle_speed">Falling speed</string>
