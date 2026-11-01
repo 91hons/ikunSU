@@ -788,6 +788,7 @@ fun ModuleItem(
             { expanded = !expanded }
         } else null
     ) {
+        ModuleBanner(module.id)
         Row(
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
