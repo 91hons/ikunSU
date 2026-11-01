@@ -203,6 +203,10 @@ class SettingsRepositoryImpl : SettingsRepository {
 
     override fun setSelinuxHideEnabled(enabled: Boolean): Int = Natives.setSelinuxHideEnabled(enabled)
 
+    override fun isAvcSpoofEnabled(): Boolean = Natives.isAvcSpoofEnabled()
+
+    override fun setAvcSpoofEnabled(enabled: Boolean): Int = Natives.setAvcSpoofEnabled(enabled)
+
     override suspend fun getSulogStatus(): String = getFeatureStatus("sulog")
 
     override suspend fun getSulogPersistValue(): Long? = getFeaturePersistValue("sulog")

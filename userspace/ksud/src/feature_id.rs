@@ -14,16 +14,18 @@ pub enum FeatureId {
     SelinuxHide = 4,
     // 5 was webview_zygote_umount (v3.3.0), keep it unused so stale configs don't apply
     ShellSuAdbOnly = 6,
+    AvcSpoof = 7,
 }
 
 impl FeatureId {
-    pub const ALL: [Self; 6] = [
+    pub const ALL: [Self; 7] = [
         Self::SuCompat,
         Self::KernelUmount,
         Self::Sulog,
         Self::AdbRoot,
         Self::SelinuxHide,
         Self::ShellSuAdbOnly,
+        Self::AvcSpoof,
     ];
 
     pub const fn from_u32(id: u32) -> Option<Self> {
@@ -34,6 +36,7 @@ impl FeatureId {
             3 => Some(Self::AdbRoot),
             4 => Some(Self::SelinuxHide),
             6 => Some(Self::ShellSuAdbOnly),
+            7 => Some(Self::AvcSpoof),
             _ => None,
         }
     }
@@ -46,6 +49,7 @@ impl FeatureId {
             Self::AdbRoot => "adb_root",
             Self::SelinuxHide => "selinux_hide",
             Self::ShellSuAdbOnly => "shell_su_adb_only",
+            Self::AvcSpoof => "avc_spoof",
         }
     }
 
@@ -61,6 +65,9 @@ impl FeatureId {
                 "SU Log - streams kernel sulog events to userspace and persists them to disk"
             }
             Self::AdbRoot => "ADB Root - Enable adbd root",
+            Self::AvcSpoof => {
+                "AVC Spoof - render su/ksu AVC denials with a private app SID"
+            }
             Self::SelinuxHide => {
                 "SELinux Hide - sanitize /sys/fs/selinux access results for app UIDs"
             }
@@ -79,6 +86,7 @@ pub fn parse_feature_id(name: &str) -> Result<FeatureId> {
         "adb_root" | "3" => Ok(FeatureId::AdbRoot),
         "selinux_hide" | "4" => Ok(FeatureId::SelinuxHide),
         "shell_su_adb_only" | "6" => Ok(FeatureId::ShellSuAdbOnly),
+        "avc_spoof" | "7" => Ok(FeatureId::AvcSpoof),
         _ => bail!("Unknown feature: {name}"),
     }
 }

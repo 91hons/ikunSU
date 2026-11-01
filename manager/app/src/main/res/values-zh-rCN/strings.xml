@@ -304,6 +304,8 @@
     <string name="settings_adb_root_summary">以 Root 权限运行 adbd 守护进程</string>
     <string name="settings_shell_su_adb_only">限制 Shell 仅可通过 ADB 获取 Root</string>
     <string name="settings_shell_su_adb_only_summary">授权 Shell 后的额外检查：仅由 adbd 或 ikunSU Root 进程（如 ADB 模块）启动的 shell 进程可获取 Root，防止应用提权到 shell 后进一步获取 Root</string>
+    <string name="settings_avc_spoof">AVC 日志伪装</string>
+    <string name="settings_avc_spoof_summary">把 su/ksu 域被拒绝的记录在审计日志中伪装成普通三方应用，dmesg/logcat 里看不到 root 痕迹。</string>
     <string name="settings_selinux_hide">隐藏 SELinux 修改</string>
     <string name="settings_selinux_hide_summary">阻止应用检测 SELinux 修改</string>
     <string name="settings_selinux_hide_reboot_required">重启生效</string>

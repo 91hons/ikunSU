@@ -241,6 +241,15 @@ fun SettingPagerMaterial(
                             )
                         },
                         {
+                            SegmentedSwitchItem(
+                                icon = Icons.Filled.Security,
+                                title = stringResource(id = R.string.settings_avc_spoof),
+                                summary = stringResource(id = R.string.settings_avc_spoof_summary),
+                                checked = uiState.isAvcSpoofEnabled,
+                                onCheckedChange = actions.onSetAvcSpoofEnabled
+                            )
+                        },
+                        {
                             val sulogSummary = when (uiState.sulogStatus) {
                                 "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
                                 "managed" -> stringResource(id = R.string.feature_status_managed_summary)

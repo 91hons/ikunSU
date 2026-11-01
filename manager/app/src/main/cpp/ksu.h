@@ -52,6 +52,8 @@ bool is_kernel_umount_enabled();
 int set_selinux_hide_enabled(bool enabled);
 
 bool is_selinux_hide_enabled();
+int set_avc_spoof_enabled(bool enabled);
+bool is_avc_spoof_enabled();
 
 bool get_allow_list(struct ksu_new_get_allow_list_cmd *);
 

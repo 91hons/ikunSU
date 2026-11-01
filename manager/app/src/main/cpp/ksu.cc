@@ -229,6 +229,25 @@ int set_selinux_hide_enabled(bool enabled) {
     return 0;
 }
 
+int set_avc_spoof_enabled(bool enabled) {
+    if (!set_feature(KSU_FEATURE_AVC_SPOOF, enabled ? 1 : 0)) {
+        return -errno;
+    }
+    return 0;
+}
+
+bool is_avc_spoof_enabled() {
+    uint64_t value = 0;
+    bool supported = false;
+    if (!get_feature(KSU_FEATURE_AVC_SPOOF, &value, &supported)) {
+        return false;
+    }
+    if (!supported) {
+        return false;
+    }
+    return value != 0;
+}
+
 bool is_selinux_hide_enabled() {
     uint64_t value = 0;
     bool supported = false;

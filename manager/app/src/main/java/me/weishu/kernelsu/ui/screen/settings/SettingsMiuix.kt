@@ -286,6 +286,21 @@ fun SettingPagerMiuix(
                                 onCheckedChange = actions.onSetSelinuxHideEnabled
                             )
 
+                            SwitchPreference(
+                                title = stringResource(id = R.string.settings_avc_spoof),
+                                summary = stringResource(id = R.string.settings_avc_spoof_summary),
+                                startAction = {
+                                    Icon(
+                                        Icons.Rounded.Security,
+                                        modifier = Modifier.padding(end = 6.dp),
+                                        contentDescription = stringResource(id = R.string.settings_avc_spoof),
+                                        tint = colorScheme.onBackground
+                                    )
+                                },
+                                checked = uiState.isAvcSpoofEnabled,
+                                onCheckedChange = actions.onSetAvcSpoofEnabled
+                            )
+
                             val sulogSummary = when (uiState.sulogStatus) {
                                 "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
                                 "managed" -> stringResource(id = R.string.feature_status_managed_summary)
