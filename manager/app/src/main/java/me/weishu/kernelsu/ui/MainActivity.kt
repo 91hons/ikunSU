@@ -10,6 +10,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.WindowInsetsSides
@@ -226,6 +227,20 @@ class MainActivity : ComponentActivity() {
                         )
                     }
 
+                    // Each page paints the wallpaper itself, so a translucent child page
+                    // cannot show the previous page through it.
+                    val pageBackground = @Composable { content: @Composable () -> Unit ->
+                        val bg = me.weishu.kernelsu.ui.cosmetic.LocalBackgroundState.current
+                        if (bg.enabled) {
+                            Box(Modifier.fillMaxSize()) {
+                                me.weishu.kernelsu.ui.cosmetic.BackgroundLayer(bg)
+                                content()
+                            }
+                        } else {
+                            content()
+                        }
+                    }
+
                     val navDisplay = @Composable {
                         NavDisplay(
                             backStack = navigator.backStack,
@@ -243,16 +258,16 @@ class MainActivity : ComponentActivity() {
                                     else -> navigator.pop()
                                 }
                             }) {
-                            entry<Route.Main>(swipeDismiss = swipeDismiss) { mainScreenEntry() }
-                            entry<Route.About>(swipeDismiss = swipeDismiss) { AboutScreen() }
-                            entry<Route.Sulog>(swipeDismiss = swipeDismiss) { SulogScreen() }
-                            entry<Route.ColorPalette>(swipeDismiss = swipeDismiss) { ColorPaletteScreen() }
-                            entry<Route.AppProfileTemplate>(swipeDismiss = swipeDismiss) { AppProfileTemplateScreen() }
+                            entry<Route.Main>(swipeDismiss = swipeDismiss) { pageBackground { mainScreenEntry() } }
+                            entry<Route.About>(swipeDismiss = swipeDismiss) { pageBackground { AboutScreen() } }
+                            entry<Route.Sulog>(swipeDismiss = swipeDismiss) { pageBackground { SulogScreen() } }
+                            entry<Route.ColorPalette>(swipeDismiss = swipeDismiss) { pageBackground { ColorPaletteScreen() } }
+                            entry<Route.AppProfileTemplate>(swipeDismiss = swipeDismiss) { pageBackground { AppProfileTemplateScreen() } }
                             entry<Route.TemplateEditor>(swipeDismiss = swipeDismiss) { key -> TemplateEditorScreen(key.template, key.readOnly) }
                             entry<Route.AppProfile>(swipeDismiss = swipeDismiss) { key -> AppProfileScreen(key.uid) }
-                            entry<Route.ModuleRepo>(swipeDismiss = swipeDismiss) { ModuleRepoScreen() }
+                            entry<Route.ModuleRepo>(swipeDismiss = swipeDismiss) { pageBackground { ModuleRepoScreen() } }
                             entry<Route.ModuleRepoDetail>(swipeDismiss = swipeDismiss) { key -> ModuleRepoDetailScreen(key.module) }
-                            entry<Route.Install>(swipeDismiss = swipeDismiss) { InstallScreen() }
+                            entry<Route.Install>(swipeDismiss = swipeDismiss) { pageBackground { InstallScreen() } }
                             entry<Route.Flash>(swipeDismiss = if (flashBackEnabled) swipeDismiss else NavSwipeDirection.None) { key ->
                                 FlashScreen(
                                     key.flashIt,
@@ -275,12 +290,12 @@ class MainActivity : ComponentActivity() {
                                     },
                                 )
                             }
-                            entry<Route.Home>(swipeDismiss = swipeDismiss) { mainScreenEntry() }
-                            entry<Route.SuperUser>(swipeDismiss = swipeDismiss) { mainScreenEntry() }
-                            entry<Route.Module>(swipeDismiss = swipeDismiss) { mainScreenEntry() }
-                            entry<Route.Settings>(swipeDismiss = swipeDismiss) { mainScreenEntry() }
-                            entry<Route.IkunSettings>(swipeDismiss = swipeDismiss) { IkunSettingsScreen() }
-                            entry<Route.IkunElevation>(swipeDismiss = swipeDismiss) { IkunElevationScreen() }
+                            entry<Route.Home>(swipeDismiss = swipeDismiss) { pageBackground { mainScreenEntry() } }
+                            entry<Route.SuperUser>(swipeDismiss = swipeDismiss) { pageBackground { mainScreenEntry() } }
+                            entry<Route.Module>(swipeDismiss = swipeDismiss) { pageBackground { mainScreenEntry() } }
+                            entry<Route.Settings>(swipeDismiss = swipeDismiss) { pageBackground { mainScreenEntry() } }
+                            entry<Route.IkunSettings>(swipeDismiss = swipeDismiss) { pageBackground { IkunSettingsScreen() } }
+                            entry<Route.IkunElevation>(swipeDismiss = swipeDismiss) { pageBackground { IkunElevationScreen() } }
                         }
                     }
 

@@ -149,7 +149,7 @@ fun ColorPaletteScreenMaterial(
             }
 
             item {
-                me.weishu.kernelsu.ui.cosmetic.BackgroundSettingsCardMaterial(modifier = Modifier.padding(horizontal = 16.dp))
+                me.weishu.kernelsu.ui.cosmetic.BackgroundSettingsCardMaterial()
             }
 
             item {

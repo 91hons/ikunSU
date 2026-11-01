@@ -57,6 +57,8 @@ private class BackgroundHandles(
     val clear: () -> Unit,
     val reset: () -> Unit,
     val setAlpha: (Float) -> Unit,
+    val setBlur: (Float) -> Unit,
+    val setDim: (Float) -> Unit,
 )
 
 @Composable
@@ -80,6 +82,8 @@ private fun rememberBackgroundHandles(): Pair<BackgroundState, BackgroundHandles
         clear = { BackgroundStore.setUri(context, null) },
         reset = { BackgroundStore.reset(context) },
         setAlpha = { BackgroundStore.setAlpha(context, it) },
+        setBlur = { BackgroundStore.setBlur(context, it) },
+        setDim = { BackgroundStore.setDim(context, it) },
     )
     return state to handles
 }
@@ -133,6 +137,38 @@ fun BackgroundSettingsCardMiuix(modifier: Modifier = Modifier) {
                             value = state.alpha,
                             onValueChange = handles.setAlpha,
                             valueRange = 0.1f..1f,
+                        )
+                    },
+                )
+                BasicComponent(
+                    title = stringResource(R.string.ikun_background_blur),
+                    endActions = {
+                        Text(
+                            "${state.blur.roundToInt()}dp",
+                            color = colorScheme.onSurfaceVariantActions,
+                        )
+                    },
+                    bottomAction = {
+                        MiuixSlider(
+                            value = state.blur,
+                            onValueChange = handles.setBlur,
+                            valueRange = 0f..25f,
+                        )
+                    },
+                )
+                BasicComponent(
+                    title = stringResource(R.string.ikun_background_dim),
+                    endActions = {
+                        Text(
+                            "${(state.dim * 100).roundToInt()}%",
+                            color = colorScheme.onSurfaceVariantActions,
+                        )
+                    },
+                    bottomAction = {
+                        MiuixSlider(
+                            value = state.dim,
+                            onValueChange = handles.setDim,
+                            valueRange = 0f..0.7f,
                         )
                     },
                 )
