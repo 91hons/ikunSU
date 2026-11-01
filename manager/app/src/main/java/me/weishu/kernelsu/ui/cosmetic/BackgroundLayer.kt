@@ -59,3 +59,20 @@ fun BackgroundLayer(state: BackgroundState, modifier: Modifier = Modifier) {
         }
     }
 }
+
+/** Loads the configured background bitmap (also used by the theme preview). */
+@Composable
+fun rememberBackgroundBitmap(uri: String): ImageBitmap? {
+    if (uri.isEmpty()) return null
+    val context = LocalContext.current
+    val bitmap by produceState<ImageBitmap?>(initialValue = null, key1 = uri) {
+        value = withContext(Dispatchers.IO) {
+            runCatching {
+                context.contentResolver.openInputStream(Uri.parse(uri))?.use { stream ->
+                    BitmapFactory.decodeStream(stream)?.asImageBitmap()
+                }
+            }.getOrNull()
+        }
+    }
+    return bitmap
+}

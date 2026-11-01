@@ -475,12 +475,14 @@ private fun ThemePreviewCard(
         colorSpec = colorSpec,
     )
 
+    val previewBackground = me.weishu.kernelsu.ui.cosmetic.LocalBackgroundState.current
     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.TopCenter) {
+        me.weishu.kernelsu.ui.cosmetic.PreviewWallpaper()
         Surface(
             modifier = Modifier
                 .fillMaxWidth(0.4f)
                 .aspectRatio(screenRatio),
-            color = colorScheme.surfaceContainer,
+            color = if (previewBackground.enabled) colorScheme.surfaceContainer.copy(alpha = previewBackground.alpha) else colorScheme.surfaceContainer,
             shape = RoundedCornerShape(20.dp),
             border = BorderStroke(1.dp, color = colorScheme.outlineVariant)
         ) {

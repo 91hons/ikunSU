@@ -567,12 +567,15 @@ private fun ThemePreviewCardMiuix(
             .padding(top = 12.dp),
         contentAlignment = Alignment.TopCenter
     ) {
+        me.weishu.kernelsu.ui.cosmetic.PreviewWallpaper(
+            modifier = Modifier.fillMaxWidth(0.4f).aspectRatio(screenRatio)
+        )
         Box(
             modifier = Modifier
                 .fillMaxWidth(0.4f)
                 .aspectRatio(screenRatio)
                 .clip(RoundedCornerShape(20.dp))
-                .background(bgColor)
+                .background(bgColor.copy(alpha = me.weishu.kernelsu.ui.cosmetic.LocalBackgroundState.current.alpha))
                 .border(1.dp, colorScheme.outline, RoundedCornerShape(20.dp))
         ) {
             val content = @Composable {
