@@ -289,6 +289,8 @@ pub fn set_feature(feature_id: u32, value: u64) -> Result<()> {
     Ok(())
 }
 
+/// Called through the manager JNI bridge, not from ksud itself.
+#[allow(dead_code)]
 pub fn set_spoof_version(release: &str, version: &str) -> Result<()> {
     // SAFETY: the command struct is plain old data and bindgen does not derive Default for it.
     let mut cmd: ksu_uapi::ksu_set_spoof_version_cmd = unsafe { std::mem::zeroed() };
