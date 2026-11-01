@@ -121,6 +121,7 @@ import me.weishu.kernelsu.ui.util.reboot
 import me.weishu.kernelsu.ui.util.rememberBlurBackdrop
 import top.yukonga.miuix.kmp.basic.ButtonDefaults
 import top.yukonga.miuix.kmp.basic.Card
+import top.yukonga.miuix.kmp.basic.CardDefaults
 import top.yukonga.miuix.kmp.basic.DropdownImpl
 import top.yukonga.miuix.kmp.basic.FloatingActionButton
 import top.yukonga.miuix.kmp.basic.FloatingActionButtonDefaults
@@ -779,17 +780,24 @@ fun ModuleItem(
     val maxLinesLimit = LocalModuleDescriptionMaxLines.current
     var expanded by rememberSaveable(module.id) { mutableStateOf(false) }
 
+    val bannerBitmap = rememberModuleBanner(module.id)
     Card(
         modifier = Modifier
             .padding(horizontal = 12.dp)
-            .padding(bottom = 12.dp),
+            .padding(bottom = 12.dp)
+            .moduleCardBackground(bannerBitmap, colorScheme.surface),
         insideMargin = PaddingValues(16.dp),
+        colors = if (bannerBitmap != null) {
+            CardDefaults.defaultColors(Color.Transparent)
+        } else {
+            CardDefaults.defaultColors()
+        },
         onClick = if (hasDescription) {
             { expanded = !expanded }
         } else null
     ) {
-        ModuleBanner(module.id)
         Row(
+            modifier = Modifier.padding(16.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {

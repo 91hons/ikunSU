@@ -728,10 +728,12 @@ private fun ModuleItem(
         val haptic = LocalHapticFeedback.current
         val textDecoration = if (!module.remove) null else TextDecoration.LineThrough
 
-        ModuleBanner(module.id)
+        val bannerBitmap = rememberModuleBanner(module.id)
 
         Column(
-            modifier = Modifier.padding(16.dp, 14.dp, 16.dp, 10.dp)
+            modifier = Modifier
+                .moduleCardBackground(bannerBitmap, MaterialTheme.colorScheme.surface)
+                .padding(16.dp, 14.dp, 16.dp, 10.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),

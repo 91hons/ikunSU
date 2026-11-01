@@ -166,6 +166,8 @@ fun ColorPaletteScreenMiuix(
                     )
                     Spacer(modifier = Modifier.height(72.dp))
 
+                    me.weishu.kernelsu.ui.cosmetic.BackgroundSettingsCard()
+
                     val themeItems = listOf(
                         stringResource(id = R.string.settings_theme_mode_system),
                         stringResource(id = R.string.settings_theme_mode_light),

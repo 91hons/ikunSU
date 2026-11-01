@@ -80,7 +80,7 @@ fun MiuixKernelSUTheme(
             val background = me.weishu.kernelsu.ui.cosmetic.LocalBackgroundState.current
             if (background.enabled) {
                 val base = MiuixTheme.colorScheme
-                val a = background.alpha.coerceIn(0.15f, 1f)
+                val a = background.alpha.coerceIn(0.1f, 1f)
                 MiuixTheme(
                     base.copy(
                         background = base.background.copy(alpha = a),

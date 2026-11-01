@@ -15,12 +15,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
+import kotlin.math.roundToInt
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.topjohnwu.superuser.io.SuFile
 import com.topjohnwu.superuser.io.SuFileInputStream
 import kotlinx.coroutines.Dispatchers
+import java.net.HttpURLConnection
+import java.net.URL
 import kotlinx.coroutines.withContext
 import me.weishu.kernelsu.ui.util.getRootShell
 
@@ -59,9 +66,33 @@ private fun readModulePropBanner(moduleId: String): String? = runCatching {
     null
 }.getOrNull()
 
+private fun fetchRemote(url: String): ByteArray? = runCatching {
+    val connection = (URL(url).openConnection() as HttpURLConnection).apply {
+        connectTimeout = 10_000
+        readTimeout = 20_000
+        instanceFollowRedirects = true
+        setRequestProperty("User-Agent", "ikunSU")
+    }
+    try {
+        if (connection.responseCode !in 200..299) return null
+        if (connection.contentLengthLong > MAX_BANNER_BYTES) return null
+        connection.inputStream.use { stream ->
+            val bytes = stream.readBytes()
+            if (bytes.size.toLong() > MAX_BANNER_BYTES) null else bytes
+        }
+    } finally {
+        connection.disconnect()
+    }
+}.getOrNull()
+
 private fun readBannerBytes(moduleId: String): ByteArray? = runCatching {
     val shell = getRootShell()
     val declared = readModulePropBanner(moduleId)
+    if (!declared.isNullOrEmpty() &&
+        (declared.startsWith("http://", true) || declared.startsWith("https://", true))
+    ) {
+        return fetchRemote(declared)
+    }
     val candidates = buildList {
         if (!declared.isNullOrEmpty() && !declared.split('/').contains("..")) {
             if (declared.startsWith("/")) {
@@ -96,7 +127,7 @@ private fun decodeBanner(bytes: ByteArray): ImageBitmap? = runCatching {
 }.getOrNull()
 
 @Composable
-private fun rememberModuleBanner(moduleId: String): ImageBitmap? {
+fun rememberModuleBanner(moduleId: String): ImageBitmap? {
     val cached = bannerCache.get(moduleId)
     if (cached != null) return cached
     val bitmap by produceState<ImageBitmap?>(initialValue = null, key1 = moduleId) {
@@ -136,5 +167,28 @@ fun ModuleBanner(moduleId: String, height: androidx.compose.ui.unit.Dp = 96.dp) 
                     ),
                 ),
         )
+    }
+}
+
+/**
+ * Draws the module artwork behind the card content, covering the whole card.
+ * A horizontal scrim keeps the text readable on bright pictures.
+ */
+fun Modifier.moduleCardBackground(banner: ImageBitmap?, scrim: Color, cornerRadius: androidx.compose.ui.unit.Dp = 16.dp): Modifier {
+    if (banner == null) return this
+    return clip(androidx.compose.foundation.shape.RoundedCornerShape(cornerRadius)).drawWithCache {
+        val scale = maxOf(size.width / banner.width, size.height / banner.height)
+        val srcW = (size.width / scale).roundToInt().coerceIn(1, banner.width)
+        val srcH = (size.height / scale).roundToInt().coerceIn(1, banner.height)
+        val srcOffset = IntOffset((banner.width - srcW) / 2, (banner.height - srcH) / 2)
+        val srcSize = IntSize(srcW, srcH)
+        val dstSize = IntSize(size.width.roundToInt(), size.height.roundToInt())
+        val gradient = Brush.horizontalGradient(
+            listOf(scrim.copy(alpha = 0.94f), scrim.copy(alpha = 0.82f), scrim.copy(alpha = 0.55f))
+        )
+        onDrawBehind {
+            drawImage(image = banner, srcOffset = srcOffset, srcSize = srcSize, dstSize = dstSize)
+            drawRect(gradient)
+        }
     }
 }

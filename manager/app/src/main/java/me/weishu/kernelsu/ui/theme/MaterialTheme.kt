@@ -67,6 +67,6 @@ private fun ColorScheme.withBackgroundTranslucency(alpha: Float): ColorScheme = 
     surfaceContainer = surfaceContainer.copy(alpha = alpha.coerceAtMost(1f)),
     surfaceContainerHigh = surfaceContainerHigh.copy(alpha = (alpha + 0.04f).coerceAtMost(1f)),
     surfaceContainerHighest = surfaceContainerHighest.copy(alpha = (alpha + 0.08f).coerceAtMost(1f)),
-    surfaceContainerLow = surfaceContainerLow.copy(alpha = (alpha - 0.04f).coerceAtLeast(0.2f)),
-    surfaceContainerLowest = surfaceContainerLowest.copy(alpha = (alpha - 0.06f).coerceAtLeast(0.2f)),
+    surfaceContainerLow = surfaceContainerLow.copy(alpha = (alpha - 0.04f).coerceAtLeast(0.1f)),
+    surfaceContainerLowest = surfaceContainerLowest.copy(alpha = (alpha - 0.06f).coerceAtLeast(0.1f)),
 )

@@ -93,7 +93,7 @@ object BackgroundStore {
     }
 
     fun setAlpha(context: Context, alpha: Float) {
-        restore(context, _state.value.copy(alpha = alpha.coerceIn(0.3f, 1f)))
+        restore(context, _state.value.copy(alpha = alpha.coerceIn(0.1f, 1f)))
     }
 
     fun setBlur(context: Context, blur: Float) {
@@ -126,6 +126,27 @@ object BackgroundStore {
         file.outputStream().use { bitmap.compress(Bitmap.CompressFormat.PNG, 95, it) }
         setUri(app, Uri.fromFile(file))
         true
+    }.getOrElse { readWallpaperWithRoot(context) }
+
+    /**
+     * Fallback for Android builds where the wallpaper API is locked behind a
+     * privileged permission: with root we can copy the wallpaper blob straight
+     * out of the system user directory.
+     */
+    private fun readWallpaperWithRoot(context: Context): Boolean = runCatching {
+        val app = context.applicationContext
+        val shell = com.topjohnwu.superuser.Shell.getShell()
+        val candidates = listOf(
+            "/data/system/users/0/wallpaper",
+            "/data/system/users/0/wallpaper_orig",
+        )
+        for (path in candidates) {
+            val suFile = com.topjohnwu.superuser.io.SuFile(path).apply { this.shell = shell }
+            if (!suFile.isFile || suFile.length() <= 0) continue
+            val bytes = com.topjohnwu.superuser.io.SuFileInputStream.open(suFile).use { it.readBytes() }
+            if (setBackgroundBytes(app, bytes, "png")) return true
+        }
+        false
     }.getOrDefault(false)
 
     /** Replaces the background with raw image bytes (used by theme import). */

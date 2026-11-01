@@ -149,6 +149,10 @@ fun ColorPaletteScreenMaterial(
             }
 
             item {
+                me.weishu.kernelsu.ui.cosmetic.BackgroundSettingsCard()
+            }
+
+            item {
                 LazyRow(
                     modifier = Modifier.fillMaxWidth(),
                     contentPadding = PaddingValues(horizontal = 16.dp),
