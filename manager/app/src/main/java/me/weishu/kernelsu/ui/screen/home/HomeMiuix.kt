@@ -54,6 +54,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import me.weishu.kernelsu.ui.cosmetic.rememberBackgroundBitmap
+import me.weishu.kernelsu.ui.cosmetic.workCardBackdrop
 import me.weishu.kernelsu.KernelVersion
 import me.weishu.kernelsu.Natives
 import me.weishu.kernelsu.R
@@ -270,10 +272,15 @@ private fun StatusCard(
                         .fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
+                    val workCardBitmap = if (workTextState.hasBackground) {
+                        me.weishu.kernelsu.ui.cosmetic.rememberBackgroundBitmap(workTextState.background)
+                    } else null
                     Card(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .workCardBackdrop(workCardBitmap, cornerRadius = 16.dp),
                         colors = CardDefaults.defaultColors(
-                            color = when {
+                            color = if (workCardBitmap != null) Color.Transparent else when {
                                 isDynamicColor -> colorScheme.secondaryContainer
                                 isInDarkTheme() -> Color(0xFF1A3825)
                                 else -> Color(0xFFDFFAE4)

@@ -61,6 +61,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import me.weishu.kernelsu.ui.cosmetic.rememberBackgroundBitmap
+import me.weishu.kernelsu.ui.cosmetic.workCardBackdrop
 import me.weishu.kernelsu.KernelVersion
 import me.weishu.kernelsu.Natives
 import me.weishu.kernelsu.R
@@ -255,9 +257,12 @@ private fun StatusCard(
             }
         } else null
 
+        val workCardBitmap = if (workTextState.hasBackground) me.weishu.kernelsu.ui.cosmetic.rememberBackgroundBitmap(workTextState.background) else null
         Surface(
-            modifier = Modifier.fillMaxWidth(),
-            color = containerColor,
+            modifier = Modifier
+                .fillMaxWidth()
+                .workCardBackdrop(workCardBitmap, cornerRadius = 20.dp),
+            color = if (workCardBitmap != null) Color.Transparent else containerColor,
             contentColor = contentColor,
             shape = MaterialTheme.shapes.large,
             onClick = {

@@ -58,6 +58,8 @@ private class BackgroundHandles(
     val clear: () -> Unit,
     val reset: () -> Unit,
     val setAlpha: (Float) -> Unit,
+    val pickWorkCard: () -> Unit,
+    val clearWorkCard: () -> Unit,
     val setBlur: (Float) -> Unit,
     val setDim: (Float) -> Unit,
 )
@@ -75,6 +77,9 @@ private fun rememberBackgroundHandles(): Pair<BackgroundState, BackgroundHandles
     val importTheme = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         if (uri != null) ThemePackage.import(context, uri)
     }
+    val pickWorkCard = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
+        if (uri != null) WorkCardStore.setBackground(context, uri)
+    }
     val handles = BackgroundHandles(
         pick = { pick.launch(arrayOf("image/*")) },
         export = { export.launch("ikunSU-theme.zip") },
@@ -83,6 +88,8 @@ private fun rememberBackgroundHandles(): Pair<BackgroundState, BackgroundHandles
         clear = { BackgroundStore.setUri(context, null) },
         reset = { BackgroundStore.reset(context) },
         setAlpha = { BackgroundStore.setAlpha(context, it) },
+        pickWorkCard = { pickWorkCard.launch(arrayOf("image/*")) },
+        clearWorkCard = { WorkCardStore.setBackground(context, null) },
         setBlur = { BackgroundStore.setBlur(context, it) },
         setDim = { BackgroundStore.setDim(context, it) },
     )
@@ -125,6 +132,11 @@ fun BackgroundSettingsCardMiuix(modifier: Modifier = Modifier) {
                 },
             )
             WorkCardTextRow()
+            BasicComponent(
+                title = stringResource(R.string.ikun_work_card_background),
+                summary = stringResource(R.string.ikun_work_card_background_summary),
+                onClick = { if (WorkCardStore.state.value.hasBackground) handles.clearWorkCard() else handles.pickWorkCard() },
+            )
             if (expanded) {
                 BasicComponent(
                     title = stringResource(R.string.ikun_background_alpha),
@@ -233,6 +245,12 @@ fun BackgroundSettingsCardMaterial(modifier: Modifier = Modifier) {
             },
         )
         WorkCardTextRow()
+        ActionRow(
+            icon = Icons.Filled.Wallpaper,
+            title = stringResource(R.string.ikun_work_card_background),
+            summary = stringResource(R.string.ikun_work_card_background_summary),
+            onClick = { if (WorkCardStore.state.value.hasBackground) handles.clearWorkCard() else handles.pickWorkCard() },
+        )
         if (expanded) {
             Column(Modifier.padding(horizontal = 16.dp)) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
