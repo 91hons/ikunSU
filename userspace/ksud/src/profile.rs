@@ -15,6 +15,7 @@ fn profile_path(dir: &str, name: &str) -> Result<PathBuf> {
     Ok(Path::new(dir).join(name))
 }
 
+#[allow(clippy::needless_pass_by_value)]
 pub fn set_sepolicy(pkg: String, policy: String) -> Result<()> {
     let policy_file = profile_path(defs::PROFILE_SELINUX_DIR, &pkg)?;
     ensure_dir_exists(defs::PROFILE_SELINUX_DIR)?;
@@ -23,6 +24,7 @@ pub fn set_sepolicy(pkg: String, policy: String) -> Result<()> {
     Ok(())
 }
 
+#[allow(clippy::needless_pass_by_value)]
 pub fn get_sepolicy(pkg: String) -> Result<()> {
     let policy_file = profile_path(defs::PROFILE_SELINUX_DIR, &pkg)?;
     let policy = std::fs::read_to_string(policy_file)?;
@@ -31,6 +33,7 @@ pub fn get_sepolicy(pkg: String) -> Result<()> {
 }
 
 // ksud doesn't guarteen the correctness of template, it just save
+#[allow(clippy::needless_pass_by_value)]
 pub fn set_template(id: String, template: String) -> Result<()> {
     let template_file = profile_path(defs::PROFILE_TEMPLATE_DIR, &id)?;
     ensure_dir_exists(defs::PROFILE_TEMPLATE_DIR)?;
@@ -38,6 +41,7 @@ pub fn set_template(id: String, template: String) -> Result<()> {
     Ok(())
 }
 
+#[allow(clippy::needless_pass_by_value)]
 pub fn get_template(id: String) -> Result<()> {
     let template_file = profile_path(defs::PROFILE_TEMPLATE_DIR, &id)?;
     let template = std::fs::read_to_string(template_file)?;
@@ -45,6 +49,7 @@ pub fn get_template(id: String) -> Result<()> {
     Ok(())
 }
 
+#[allow(clippy::needless_pass_by_value)]
 pub fn delete_template(id: String) -> Result<()> {
     let template_file = profile_path(defs::PROFILE_TEMPLATE_DIR, &id)?;
     std::fs::remove_file(template_file)?;
