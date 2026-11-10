@@ -5,6 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
@@ -26,7 +28,7 @@ fun WorkCardBackground(
     scrim: Color = Color.Black,
     content: @Composable () -> Unit,
 ) {
-    val state = WorkCardStore.state.value
+    val state by WorkCardStore.state.collectAsState()
     val bitmap = if (state.hasBackground) rememberBackgroundBitmap(state.background) else null
     if (bitmap == null) {
         Box(modifier) { content() }
