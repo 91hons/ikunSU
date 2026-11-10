@@ -34,11 +34,19 @@ jobs:
         run: |
           set -e
           ALL='["android12-5.10","android13-5.10","android13-5.15","android14-5.15","android14-6.1","android15-6.6","android16-6.12","android17-6.18"]'
-          if [ -n "${{ inputs.kmi }}" ]; then
-            echo "kmis=[\"${{ inputs.kmi }}\"]" >> "$GITHUB_OUTPUT"
-          else
+          if [ -z "${{ inputs.kmi }}" ]; then
             echo "kmis=$ALL" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          case " $ALL " in
+            *"\"${{ inputs.kmi }}\""*)
+              echo "kmis=[\"${{ inputs.kmi }}\"]" >> "$GITHUB_OUTPUT"
+              ;;
+            *)
+              echo "::error::unknown kmi '${{ inputs.kmi }}'; expected one of android12-5.10 android13-5.10 android13-5.15 android14-5.15 android14-6.1 android15-6.6 android16-6.12 android17-6.18 (or leave empty for all)"
+              exit 1
+              ;;
+          esac
 
   build-susfs-ko:
     name: susfs_guard_lkm.ko (${{ matrix.kmi }})
