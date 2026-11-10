@@ -3,7 +3,7 @@
 set -eu
 KMI="${1:-android16-6.12}"
 DDK="${DDK:-/opt/ddk}"
-KDIR="$DDK/kdir-min/$KMI"
+KDIR="${2:-$DDK/kdir-min/$KMI}"
 MOD_DIR="$(cd "$(dirname "$0")/../kernel/susfs" && pwd)"
 
 CLANG_DIR=""
