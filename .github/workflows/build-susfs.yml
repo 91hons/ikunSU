@@ -1,0 +1,83 @@
+name: Build SUSFS LKM
+
+on:
+  workflow_call:
+    inputs:
+      kmi:
+        description: 'KMI, e.g. android16-6.12'
+        required: true
+        type: string
+      ddk_release:
+        description: 'DDK release tag used by the ddk-min image'
+        required: false
+        default: '20260828'
+        type: string
+  workflow_dispatch:
+    inputs:
+      kmi:
+        description: 'Single KMI to build (leave empty for all)'
+        required: false
+        type: string
+      ddk_release:
+        required: false
+        default: '20260828'
+        type: string
+
+jobs:
+  # Standalone dispatch builds every KMI; workflow_call builds the one requested.
+  matrix:
+    runs-on: ubuntu-latest
+    outputs:
+      kmis: ${{ steps.set.outputs.kmis }}
+    steps:
+      - id: set
+        run: |
+          set -e
+          ALL='["android12-5.10","android13-5.10","android13-5.15","android14-5.15","android14-6.1","android15-6.6","android16-6.12","android17-6.18"]'
+          if [ -n "${{ inputs.kmi }}" ]; then
+            echo "kmis=[\"${{ inputs.kmi }}\"]" >> "$GITHUB_OUTPUT"
+          else
+            echo "kmis=$ALL" >> "$GITHUB_OUTPUT"
+          fi
+
+  build-susfs-ko:
+    name: susfs_guard_lkm.ko (${{ matrix.kmi }})
+    needs: matrix
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        kmi: ${{ fromJson(needs.matrix.outputs.kmis) }}
+    container:
+      image: ghcr.io/ylarod/ddk-min:${{ matrix.kmi }}-${{ inputs.ddk_release || '20260828' }}
+      options: --privileged
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Build susfs_guard_lkm.ko
+        run: |
+          set -e
+          echo "KMI=${{ matrix.kmi }}"
+          echo "KDIR=$KDIR"
+          if [ -z "${KDIR:-}" ] || [ ! -f "$KDIR/Makefile" ]; then
+            echo "::error::KDIR is not a prepared kernel build tree"
+            exit 1
+          fi
+
+          cd kernel/susfs
+          make -k -C "$KDIR" M="$PWD" ARCH=arm64 CC=clang LLVM=1 LLVM_IAS=1 modules -j"$(nproc)"
+
+          test -f susfs_guard_lkm.ko || { echo "::error::susfs_guard_lkm.ko not produced"; exit 1; }
+
+          mkdir -p /github/workspace/out/aarch64
+          OUT="/github/workspace/out/aarch64/${{ matrix.kmi }}_susfs_guard_lkm.ko"
+          cp susfs_guard_lkm.ko "$OUT"
+          llvm-strip -d "$OUT" || true
+          ls -l "$OUT"
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: aarch64-${{ matrix.kmi }}-susfs-lkm
+          path: /github/workspace/out/aarch64/${{ matrix.kmi }}_susfs_guard_lkm.ko
+          if-no-files-found: error
