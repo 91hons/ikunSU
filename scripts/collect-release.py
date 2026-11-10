@@ -148,7 +148,7 @@ def collect(artifacts, output, tag, commit, version_file):
         LKM.validate_elf(binary, machine, allowed_types=(2, 3))
         add_record(records, binary, f"ksuinit-{arch}", kind="ksuinit", elf_machine=machine)
     # SUSFS guard modules are optional: ship whichever KMI builds came out of CI.
-    for module in sorted(artifacts.glob("aarch64-*-susfs-lkm/*_susfs_guard_lkm.ko")):
+    for module in sorted(artifacts.glob("susfs-lkm-*/*_susfs_guard_lkm.ko")):
         LKM.validate_elf(module, 183, allowed_types=(1,))
         add_record(records, module, module.name, kind="susfs_lkm", elf_machine=183)
     LKM.write_collection(records, output, "release-manifest.json", version, {"tag": tag, "commit": commit, "build_identity": identity})
