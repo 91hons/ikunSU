@@ -545,7 +545,10 @@ pub fn run() -> Result<()> {
     let result = match cli.command {
         Commands::Stealth { command } => crate::stealth::run(command),
         Commands::Webui { command } => crate::webui::run(command),
-        Commands::PostFsData => init_event::on_post_fs_data(),
+        Commands::PostFsData => {
+            crate::susfs::load_if_autoload_enabled();
+            init_event::on_post_fs_data()
+        }
         Commands::BootCompleted => {
             init_event::on_boot_completed();
             Ok(())
@@ -563,6 +566,14 @@ pub fn run() -> Result<()> {
                 crate::susfs::status();
                 Ok(())
             }
+            SusfsCommand::Autoload { action } => match action.as_str() {
+                "enable" => crate::susfs::set_autoload(true),
+                "disable" => crate::susfs::set_autoload(false),
+                _ => {
+                    println!("autoload={}", crate::susfs::autoload_enabled());
+                    Ok(())
+                }
+            },
         },
 
         Commands::Module { command } => {
@@ -880,4 +891,9 @@ enum SusfsCommand {
     Version,
     /// Print machine readable state (loaded/version/variant)
     Status,
+    /// Enable or disable loading the module on every boot
+    Autoload {
+        #[arg(value_parser = ["enable", "disable", "status"])]
+        action: String,
+    },
 }

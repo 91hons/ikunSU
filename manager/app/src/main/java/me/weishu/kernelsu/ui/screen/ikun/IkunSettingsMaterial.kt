@@ -105,6 +105,27 @@ internal fun IkunSettingsMaterial(state: IkunSettingsUiState, actions: IkunSetti
             item {
                 TonalCard(Modifier.fillMaxWidth()) {
                     Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                        Toggle(
+                            stringResource(R.string.ikun_susfs),
+                            state.susfsLoaded,
+                            enabled = !state.busy,
+                            onCheckedChange = actions.onSetSusfs,
+                        )
+                        Text(
+                            stringResource(
+                                R.string.ikun_susfs_summary,
+                                if (state.susfsLoaded) state.susfsVersion.ifEmpty { "-" } else "-",
+                                if (state.susfsAutoload) "on" else "off",
+                            ),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.bodySmall,
+                        )
+                    }
+                }
+            }
+            item {
+                TonalCard(Modifier.fillMaxWidth()) {
+                    Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Toggle(stringResource(R.string.ikun_falling), state.falling, onCheckedChange = actions.onSetFalling)
                         Toggle(stringResource(R.string.ikun_snow), state.snow, onCheckedChange = actions.onSetSnow)
                         SliderOption(

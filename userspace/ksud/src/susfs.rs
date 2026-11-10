@@ -157,3 +157,34 @@ pub fn status() {
     println!("version={version}");
     println!("variant={variant}");
 }
+
+const AUTOLOAD_CONFIG: &str = "/data/adb/ksu/susfs.autoload";
+
+/// Whether the guard module should be loaded on every boot.
+pub fn autoload_enabled() -> bool {
+    std::fs::read_to_string(AUTOLOAD_CONFIG).is_ok_and(|content| content.trim() == "1")
+}
+
+pub fn set_autoload(enabled: bool) -> Result<()> {
+    let path = std::path::Path::new(AUTOLOAD_CONFIG);
+    if let Some(parent) = path.parent() {
+        std::fs::create_dir_all(parent).ok();
+    }
+    std::fs::write(path, if enabled { "1\n" } else { "0\n" })
+        .with_context(|| format!("failed to write {AUTOLOAD_CONFIG}"))?;
+    println!(
+        "SUSFS auto-load {}",
+        if enabled { "enabled" } else { "disabled" }
+    );
+    Ok(())
+}
+
+/// Called from the boot events: loads the module when auto-load is on.
+pub fn load_if_autoload_enabled() {
+    if !autoload_enabled() || is_loaded() {
+        return;
+    }
+    if let Err(error) = load(None) {
+        eprintln!("susfs auto-load failed: {error:#}");
+    }
+}

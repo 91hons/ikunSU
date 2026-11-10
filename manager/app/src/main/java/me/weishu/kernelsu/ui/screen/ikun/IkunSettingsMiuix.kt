@@ -143,6 +143,20 @@ internal fun IkunSettingsMiuix(state: IkunSettingsUiState, actions: IkunSettings
                 item {
                     Card(Modifier.padding(top = 12.dp).fillMaxWidth()) {
                         SwitchPreference(
+                            title = stringResource(R.string.ikun_susfs),
+                            summary = stringResource(
+                                R.string.ikun_susfs_summary,
+                                if (state.susfsLoaded) state.susfsVersion.ifEmpty { "-" } else "-",
+                                if (state.susfsAutoload) "on" else "off",
+                            ),
+                            checked = state.susfsLoaded,
+                            onCheckedChange = actions.onSetSusfs,
+                        )
+                    }
+                }
+                item {
+                    Card(Modifier.padding(top = 12.dp).fillMaxWidth()) {
+                        SwitchPreference(
                             title = stringResource(R.string.ikun_falling),
                             checked = state.falling,
                             onCheckedChange = actions.onSetFalling,

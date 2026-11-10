@@ -42,6 +42,9 @@ internal data class IkunSettingsUiState(
     val backgroundAlpha: Float,
     val backgroundBlur: Float,
     val backgroundDim: Float,
+    val susfsLoaded: Boolean,
+    val susfsAutoload: Boolean,
+    val susfsVersion: String,
     val busy: Boolean,
     val message: String,
 )
@@ -67,6 +70,7 @@ internal data class IkunSettingsActions(
     val onExportTheme: () -> Unit,
     val onImportTheme: () -> Unit,
     val onResetTheme: () -> Unit,
+    val onSetSusfs: (Boolean) -> Unit,
 )
 
 @Composable
@@ -80,6 +84,36 @@ fun IkunSettingsScreen() {
     var backgroundSet by remember { mutableStateOf(BackgroundStore.load(context).enabled) }
     val backgroundState by BackgroundStore.state.collectAsState()
     var autostart by remember { mutableStateOf(false) }
+    var susfsLoaded by remember { mutableStateOf(false) }
+    var susfsAutoload by remember { mutableStateOf(false) }
+    var susfsVersion by remember { mutableStateOf("") }
+
+    fun refreshSusfs() {
+        scope.launch {
+            val (loaded, autoload, version) = withContext(Dispatchers.IO) {
+                runCatching {
+                    val out = ArrayList<String>()
+                    getRootShell().newJob().add("${context.applicationInfo.nativeLibraryDir}/libksud.so susfs status")
+                        .to(out, null).exec()
+                    val autoloadOut = ArrayList<String>()
+                    getRootShell().newJob().add("${context.applicationInfo.nativeLibraryDir}/libksud.so susfs autoload status")
+                        .to(autoloadOut, null).exec()
+                    val fields = out.associate {
+                        val idx = it.indexOf('=')
+                        if (idx > 0) it.substring(0, idx) to it.substring(idx + 1) else it to ""
+                    }
+                    Triple(
+                        fields["loaded"] == "true",
+                        autoloadOut.any { it.trim() == "autoload=true" },
+                        fields["version"].orEmpty(),
+                    )
+                }.getOrElse { Triple(false, false, "") }
+            }
+            susfsLoaded = loaded
+            susfsAutoload = autoload
+            susfsVersion = version
+        }
+    }
     var busy by remember { mutableStateOf(false) }
     var message by remember { mutableStateOf("") }
     val failed = stringResource(R.string.ikun_operation_failed)
@@ -116,6 +150,7 @@ fun IkunSettingsScreen() {
 
     LifecycleResumeEffect(Unit) {
         hidden = StealthController.isHidden(context)
+        refreshSusfs()
         scope.launch {
             autostart = withContext(Dispatchers.IO) {
                 runCatching {
@@ -166,6 +201,9 @@ fun IkunSettingsScreen() {
         backgroundAlpha = backgroundState.alpha,
         backgroundBlur = backgroundState.blur,
         backgroundDim = backgroundState.dim,
+        susfsLoaded = susfsLoaded,
+        susfsAutoload = susfsAutoload,
+        susfsVersion = susfsVersion,
         busy = busy,
         message = message,
     )
@@ -212,6 +250,28 @@ fun IkunSettingsScreen() {
         onClearBackground = {
             BackgroundStore.setUri(context, null)
             backgroundSet = false
+        },
+        onSetSusfs = { value ->
+            if (!busy) {
+                busy = true
+                scope.launch {
+                    try {
+                        val ok = withContext(Dispatchers.IO) {
+                            if (value) {
+                                execKsud("susfs autoload enable") && execKsud("susfs load")
+                            } else {
+                                execKsud("susfs unload") && execKsud("susfs autoload disable")
+                            }
+                        }
+                        message = if (ok) done else failed
+                        refreshSusfs()
+                    } catch (error: Exception) {
+                        message = error.message ?: failed
+                    } finally {
+                        busy = false
+                    }
+                }
+            }
         },
         onSetBackgroundAlpha = { BackgroundStore.setAlpha(context, it) },
         onSetBackgroundBlur = { BackgroundStore.setBlur(context, it) },
