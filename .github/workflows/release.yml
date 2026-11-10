@@ -58,10 +58,29 @@ jobs:
     needs: preflight
     uses: ./.github/workflows/build-manager.yml
     secrets: inherit
+
+  build-susfs:
+    needs: preflight
+    strategy:
+      fail-fast: false
+      matrix:
+        kmi:
+          - android12-5.10
+          - android13-5.10
+          - android13-5.15
+          - android14-5.15
+          - android14-6.1
+          - android15-6.6
+          - android16-6.12
+          - android17-6.18
+    uses: ./.github/workflows/build-susfs.yml
+    with:
+      kmi: ${{ matrix.kmi }}
   release:
     needs:
       - preflight
       - build-manager
+      - build-susfs
     runs-on: ubuntu-latest
     permissions:
       contents: write
