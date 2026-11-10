@@ -259,6 +259,9 @@ fun SettingPagerMaterial(
                             )
                         },
                         {
+                            me.weishu.kernelsu.ui.susfs.SusfsSwitchMaterial()
+                        },
+                        {
                             val sulogSummary = when (uiState.sulogStatus) {
                                 "unsupported" -> stringResource(id = R.string.feature_status_unsupported_summary)
                                 "managed" -> stringResource(id = R.string.feature_status_managed_summary)
