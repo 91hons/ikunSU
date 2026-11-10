@@ -37,7 +37,8 @@ jobs:
       if: ${{ inputs.pack_lkm }}
       run: |
         cp aarch64-android*-lkm/*_kernelsu.ko ./userspace/ksud/bin/aarch64/
-        cp aarch64-android*-susfs-lkm/*_susfs_guard_lkm.ko ./userspace/ksud/bin/aarch64/ || true
+        cp aarch64-android*-susfs-lkm/*_susfs_guard_lkm.ko ./userspace/ksud/bin/aarch64/ 2>/dev/null || true
+        cp susfs-lkm-*/*_susfs_guard_lkm.ko ./userspace/ksud/bin/aarch64/ 2>/dev/null || true
         cp x86_64-android*-lkm/*_kernelsu.ko ./userspace/ksud/bin/x86_64/
     
     - name: Prepare ksuinit
