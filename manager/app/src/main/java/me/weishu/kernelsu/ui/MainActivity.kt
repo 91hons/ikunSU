@@ -163,7 +163,10 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val cosmeticState = remember { CosmeticState(applicationContext) }
-        LaunchedEffect(Unit) { BackgroundStore.init(applicationContext) }
+        LaunchedEffect(Unit) {
+            BackgroundStore.init(applicationContext)
+            me.weishu.kernelsu.ui.cosmetic.WorkCardStore.init(applicationContext)
+        }
         val backgroundState by BackgroundStore.state.collectAsStateWithLifecycle()
             val viewModel = viewModel<MainActivityViewModel>()
             val uiState by viewModel.uiState.collectAsStateWithLifecycle()

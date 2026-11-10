@@ -47,6 +47,8 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberTopAppBarState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -212,8 +214,9 @@ private fun StatusCard(
             notInstalled -> Icons.Rounded.Warning
             else -> Icons.Rounded.Block
         }
+        val workTextState by me.weishu.kernelsu.ui.cosmetic.WorkCardStore.state.collectAsState()
         val statusTitle = when {
-            ksuActive -> stringResource(R.string.home_ikun_working)
+            ksuActive -> workTextState.text.ifEmpty { stringResource(R.string.home_ikun_working) }
             notInstalled -> stringResource(R.string.home_not_installed)
             else -> stringResource(R.string.home_unsupported)
         }

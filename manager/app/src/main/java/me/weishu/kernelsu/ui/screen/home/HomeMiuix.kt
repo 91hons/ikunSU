@@ -38,6 +38,8 @@ import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material.icons.rounded.CheckCircleOutline
 import androidx.compose.material.icons.rounded.ErrorOutline
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -260,7 +262,8 @@ private fun StatusCard(
                     true -> "LKM"
                     else -> "GKI"
                 }
-                val workingText = "${stringResource(id = R.string.home_ikun_working)}$workingState"
+                val workTextState by me.weishu.kernelsu.ui.cosmetic.WorkCardStore.state.collectAsState()
+                val workingText = "${workTextState.text.ifEmpty { stringResource(id = R.string.home_ikun_working) }}$workingState"
 
                 Row(
                     modifier = Modifier

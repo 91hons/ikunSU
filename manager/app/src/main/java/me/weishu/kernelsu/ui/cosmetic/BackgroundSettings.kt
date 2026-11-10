@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.UploadFile
 import androidx.compose.material.icons.filled.Wallpaper
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -123,6 +124,7 @@ fun BackgroundSettingsCardMiuix(modifier: Modifier = Modifier) {
                     )
                 },
             )
+            WorkCardTextRow()
             if (expanded) {
                 BasicComponent(
                     title = stringResource(R.string.ikun_background_alpha),
@@ -230,6 +232,7 @@ fun BackgroundSettingsCardMaterial(modifier: Modifier = Modifier) {
                 )
             },
         )
+        WorkCardTextRow()
         if (expanded) {
             Column(Modifier.padding(horizontal = 16.dp)) {
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
@@ -305,5 +308,34 @@ private fun ActionRow(
             Text(summary, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
         trailing?.invoke()
+    }
+}
+
+/** Lets the user personalise the headline of the home "working" card. */
+@Composable
+fun WorkCardTextRow(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val state by WorkCardStore.state.collectAsState()
+    var draft by remember(state.text) { mutableStateOf(state.text) }
+    Column(modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 12.dp)) {
+        Text(
+            stringResource(R.string.ikun_work_card_text),
+            style = MaterialTheme.typography.bodyLarge,
+        )
+        Text(
+            stringResource(R.string.ikun_work_card_text_summary),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        OutlinedTextField(
+            value = draft,
+            onValueChange = {
+                draft = it
+                WorkCardStore.setText(context, it)
+            },
+            placeholder = { Text(WorkCardStore.DEFAULT_TEXT) },
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+        )
     }
 }
