@@ -85,7 +85,7 @@ fn show_version() -> Option<String> {
             KSU_INSTALL_MAGIC1,
             SUSFS_MAGIC,
             CMD_SUSFS_SHOW_VERSION,
-            &mut info as *mut _,
+            &raw mut info,
         );
     }
     if info.err != 0 {
@@ -110,7 +110,7 @@ fn show_variant() -> Option<String> {
             KSU_INSTALL_MAGIC1,
             SUSFS_MAGIC,
             CMD_SUSFS_SHOW_VARIANT,
-            &mut info as *mut _,
+            &raw mut info,
         );
     }
     if info.err != 0 {
@@ -140,7 +140,7 @@ pub fn version() -> Result<()> {
 }
 
 /// Machine readable state used by the Manager.
-pub fn status() -> Result<()> {
+pub fn status() {
     let loaded = is_loaded();
     let version = if loaded {
         show_version().unwrap_or_default()
@@ -156,5 +156,4 @@ pub fn status() -> Result<()> {
     println!("module={MODULE_NAME}");
     println!("version={version}");
     println!("variant={variant}");
-    Ok(())
 }

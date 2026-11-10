@@ -559,7 +559,10 @@ pub fn run() -> Result<()> {
             SusfsCommand::Load { kmi } => crate::susfs::load(kmi.as_deref()),
             SusfsCommand::Unload => crate::susfs::unload(),
             SusfsCommand::Version => crate::susfs::version(),
-            SusfsCommand::Status => crate::susfs::status(),
+            SusfsCommand::Status => {
+                crate::susfs::status();
+                Ok(())
+            }
         },
 
         Commands::Module { command } => {
