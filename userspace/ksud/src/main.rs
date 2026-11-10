@@ -56,6 +56,8 @@ mod sepolicy;
 mod soft_reboot;
 mod stealth;
 #[cfg(target_os = "android")]
+mod susfs;
+#[cfg(target_os = "android")]
 mod su;
 #[cfg(target_os = "android")]
 mod sulog;

@@ -118,6 +118,11 @@ enum Commands {
     },
 
     /// Manage kernel features
+    Susfs {
+        #[command(subcommand)]
+        command: SusfsCommand,
+    },
+
     Feature {
         #[command(subcommand)]
         command: Feature,
@@ -550,6 +555,13 @@ pub fn run() -> Result<()> {
 
         Commands::Insmod { module, params } => debug::insmod(&module, &params),
 
+        Commands::Susfs { command } => match command {
+            SusfsCommand::Load { kmi } => crate::susfs::load(kmi.as_deref()),
+            SusfsCommand::Unload => crate::susfs::unload(),
+            SusfsCommand::Version => crate::susfs::version(),
+            SusfsCommand::Status => crate::susfs::status(),
+        },
+
         Commands::Module { command } => {
             utils::switch_mnt_ns(1)?;
             match command {
@@ -850,4 +862,19 @@ pub fn run() -> Result<()> {
         log::error!("Error: {e:?}");
     }
     result
+}
+
+#[derive(clap::Subcommand, Debug)]
+enum SusfsCommand {
+    /// Load the SUSFS guard LKM (auto-detects KMI when omitted)
+    Load {
+        #[arg(long)]
+        kmi: Option<String>,
+    },
+    /// Unload the SUSFS guard LKM
+    Unload,
+    /// Print the SUSFS version reported by the kernel
+    Version,
+    /// Print machine readable state (loaded/version/variant)
+    Status,
 }
