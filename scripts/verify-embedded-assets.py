@@ -47,8 +47,13 @@ def verify(root, arch):
     if arch != "riscv64":
         expected = {f"{kmi}_kernelsu.ko" for kmi in targets["kmis"]}
         actual = {path.name for path in directory.glob("*.ko")}
-        if actual != expected:
+        # The SUSFS guard modules ride along with ksud but are optional: a build
+        # without them is still valid, we only verify the architecture when present.
+        susfs = {name for name in actual if name.endswith("_susfs_guard_lkm.ko")}
+        if actual - susfs != expected:
             raise ValueError(f"Incomplete KMI matrix for {arch}: missing={sorted(expected - actual)}, unexpected={sorted(actual - expected)}")
+        for name in sorted(susfs):
+            collector.validate_elf(directory / name, machines[arch])
         for kmi in targets["kmis"]:
             name = f"{kmi}_kernelsu.ko"
             path = directory / name
