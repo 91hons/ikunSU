@@ -91,7 +91,11 @@ fn show_version() -> Option<String> {
     if info.err != 0 {
         return None;
     }
-    let length = info.value.iter().position(|b| *b == 0).unwrap_or(VERSION_BUFSIZE);
+    let length = info
+        .value
+        .iter()
+        .position(|b| *b == 0)
+        .unwrap_or(VERSION_BUFSIZE);
     (length != 0).then(|| String::from_utf8_lossy(&info.value[..length]).into_owned())
 }
 
@@ -112,7 +116,11 @@ fn show_variant() -> Option<String> {
     if info.err != 0 {
         return None;
     }
-    let length = info.value.iter().position(|b| *b == 0).unwrap_or(VARIANT_BUFSIZE);
+    let length = info
+        .value
+        .iter()
+        .position(|b| *b == 0)
+        .unwrap_or(VARIANT_BUFSIZE);
     (length != 0).then(|| String::from_utf8_lossy(&info.value[..length]).into_owned())
 }
 
@@ -134,8 +142,16 @@ pub fn version() -> Result<()> {
 /// Machine readable state used by the Manager.
 pub fn status() -> Result<()> {
     let loaded = is_loaded();
-    let version = if loaded { show_version().unwrap_or_default() } else { String::new() };
-    let variant = if loaded { show_variant().unwrap_or_default() } else { String::new() };
+    let version = if loaded {
+        show_version().unwrap_or_default()
+    } else {
+        String::new()
+    };
+    let variant = if loaded {
+        show_variant().unwrap_or_default()
+    } else {
+        String::new()
+    };
     println!("loaded={loaded}");
     println!("module={MODULE_NAME}");
     println!("version={version}");
