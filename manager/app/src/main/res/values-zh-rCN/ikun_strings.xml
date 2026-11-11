@@ -29,6 +29,8 @@
     <string name="ikun_work_card_background_summary">&#20026;&#20027;&#39029;&#29366;&#24577;&#21345;&#29255;&#36873;&#25321;&#32972;&#26223;&#22270;&#65292;&#20877;&#28857;&#19968;&#27425;&#28165;&#38500;</string>
     <string name="ikun_susfs">SUSFS &#20869;&#26680;&#27169;&#22359;</string>
     <string name="ikun_susfs_summary">&#21152;&#36733;/&#21368;&#36733; SUSFS guard LKM&#65292;&#33258;&#21160;&#35782;&#21035;&#20869;&#26680; KMI&#12290;&#29256;&#26412;=%1$s &#24320;&#26426;&#33258;&#21160;=%2$s</string>
+    <string name="ikun_susfs_version">SuSFS &#29256;&#26412;</string>
+    <string name="ikun_susfs_supported">&#25903;&#25345; | %1$s</string>
     <string name="ikun_falling">&#23631;&#24149;&#39128;&#33853;&#21160;&#30011;</string>
     <string name="ikun_snow">&#20351;&#29992;&#38634;&#33457;&#31890;&#23376;&#65288;&#20851;&#38381;&#21518;&#20026; ikun &#39128;&#33853;&#65289;</string>
     <string name="ikun_particle_size">&#39128;&#33853;&#22823;&#23567;</string>

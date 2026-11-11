@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Smartphone
+import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Tag
 import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material.icons.rounded.Block
@@ -443,6 +444,16 @@ private fun InfoCard(
                     label = stringResource(R.string.home_manager_version),
                     content = systemInfo.managerVersion,
                 )
+            }
+            item {
+                val susfsInfo = me.weishu.kernelsu.ui.susfs.rememberSusfsInfo()
+                if (susfsInfo.loaded) {
+                    InfoCardItem(
+                        icon = Icons.Filled.Shield,
+                        label = stringResource(R.string.ikun_susfs_version),
+                        content = stringResource(R.string.ikun_susfs_supported, susfsInfo.summary),
+                    )
+                }
             }
             item {
                 InfoCardItem(

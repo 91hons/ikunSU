@@ -29,6 +29,8 @@
     <string name="ikun_work_card_background_summary">Pick a picture for the home status card, tap again to clear</string>
     <string name="ikun_susfs">SUSFS kernel module</string>
     <string name="ikun_susfs_summary">Load or unload the SUSFS guard LKM; detects the kernel KMI automatically. version=%1$s autoload=%2$s</string>
+    <string name="ikun_susfs_version">SuSFS version</string>
+    <string name="ikun_susfs_supported">Supported | %1$s</string>
     <string name="ikun_falling">Falling animation</string>
     <string name="ikun_snow">Use snow particles instead of ikun images</string>
     <string name="ikun_particle_size">Particle size</string>
